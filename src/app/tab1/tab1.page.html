@@ -13,18 +13,18 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-card>
-    <ion-img src="assets/hozier_event.png"></ion-img>
+  <ion-card *ngFor="let event of evento">
+    <ion-img [src]="event.images[0].url"></ion-img>
     <ion-card-header>
-      <ion-card-title>Hozier</ion-card-title>
+      <ion-card-title>{{ event.name }}</ion-card-title> 
     </ion-card-header>
 
     <ion-card-content>
       <ion-icon name="calendar"></ion-icon>
-      Lunes, 1 de julio de 2024
-        <br>  
+      {{ event.dates.start.localDate }} 
+      <br>  
       <ion-icon name="pin"></ion-icon>
-      WiZink Center, Madrid
+      {{ event._embedded.venues[0].name }}, {{ event._embedded.venues[0].city.name }}
     </ion-card-content>
   </ion-card>
 
