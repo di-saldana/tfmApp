@@ -1,12 +1,9 @@
-import { CapacitorConfig } from '@capacitor/cli';
+import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'tfm_app',
-  webDir: 'www',
-  server: {
-    androidScheme: 'https'
-  }
+  appId: 'es.ua.mastermoviles.dsl.tfm',
+  appName: 'TFM App',
+  webDir: 'www'
 };
 
 export default config;
