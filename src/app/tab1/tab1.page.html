@@ -13,6 +13,8 @@
     </ion-toolbar>
   </ion-header>
 
+  <ion-searchbar placeholder="Search Event"></ion-searchbar>
+
   <ion-card *ngFor="let event of evento">
     <ion-img [src]="event.images[0].url"></ion-img>
     <ion-card-header>
@@ -26,6 +28,13 @@
       <ion-icon name="pin"></ion-icon>
       {{ event._embedded.venues[0].name }}, {{ event._embedded.venues[0].city.name }}
     </ion-card-content>
-  </ion-card>
 
+    <ion-button shape="round" class="ion-align-self-center">
+      <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
+    </ion-button>
+
+    <ion-button shape="round" class="ion-align-self-center">
+      <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+    </ion-button>
+  </ion-card>
 </ion-content>

@@ -14,9 +14,9 @@ export class Tab1Page implements OnInit {
   constructor(private activatedRoute: ActivatedRoute, private ticketmasterAPIService: TicketmasterService) {}
 
   ngOnInit() {
-    console.log(this.ticketmasterAPIService.getEventsByPostalCode('28009'))
+    console.log(this.ticketmasterAPIService.getEventsByPostalCode('08038')) // Madrid '28009'
 
-    const eventsPromise = this.ticketmasterAPIService.getEventsByPostalCode('28009');
+    const eventsPromise = this.ticketmasterAPIService.getEventsByPostalCode('08038');
     const eventsObservable = from(eventsPromise);
 
     eventsObservable.subscribe(
