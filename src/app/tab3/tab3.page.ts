@@ -5,7 +5,7 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: 'tab3.page.html',
   styleUrls: ['tab3.page.scss']
 })
-export class Tab3Page implements OnInit {
+export class Tab3Page { 
   userName: string = 'Dianelys Saldaña';
   userAge: number = 25;
   userDistance: number = 0; 
@@ -14,9 +14,4 @@ export class Tab3Page implements OnInit {
   favoriteGenres: string[] = ['Indie pop', 'Alternative', 'Latin rock'];
 
   constructor() {}
-
-  ngOnInit() {
-    // Initialize or fetch user data here
-  }
-
 }

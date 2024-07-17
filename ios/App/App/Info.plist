@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-        <string>TFM App</string>
+	<string>TFM App</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -45,11 +45,20 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>We need your location to show relevant events nearby.</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>We need your location to show relevant events nearby.</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>We need your location to show relevant events nearby.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to show relevant events nearby.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>We need your location to show relevant events nearby.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We need your location to show relevant events nearby.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>http://localhost:8100/</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

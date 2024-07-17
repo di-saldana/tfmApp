@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { TicketmasterService } from '../api/ticketmaster.service'
+import { TicketmasterService } from '../api/ticketmaster/ticketmaster.service'
 import { from } from 'rxjs';
 
 @Component({

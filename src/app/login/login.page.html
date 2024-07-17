@@ -13,8 +13,8 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content class="ion-padding">
-    <ion-button [routerLink]="['/tabs']">Go to tabs</ion-button>
+  <ion-content class="ion-padding center-content">
+    <ion-button (click)="requestAuthorization()">Log in with Spotify</ion-button> 
   </ion-content>
 
 </ion-content>
