@@ -30,7 +30,6 @@
     "@ionic/angular": "^7.0.0",
     "axios": "^1.6.7",
     "capacitor-spotify": "^0.2.10",
-    "cordova-spotify-oauth": "^0.1.13",
     "firebase": "^10.12.3",
     "ionicons": "^7.0.0",
     "ngeohash": "^0.6.3",

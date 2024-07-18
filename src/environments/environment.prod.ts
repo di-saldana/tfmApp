@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  firebase: {
+  firebaseConfig: {
     apiKey: "AIzaSyBtJUTpiMKyOdMO9bQIAXeo2dJMLqv9ivw",
     authDomain: "tfm-app-dsl.firebaseapp.com",
     projectId: "tfm-app-dsl",

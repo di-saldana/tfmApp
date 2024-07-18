@@ -6,12 +6,15 @@ PODS:
   - CapacitorCordova (6.1.0)
   - CapacitorGeolocation (6.0.0):
     - Capacitor
+  - CapacitorSpotify (0.0.1):
+    - Capacitor
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorGeolocation (from `../../node_modules/@capacitor/geolocation`)"
+  - CapacitorSpotify (from `../../node_modules/capacitor-spotify`)
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -22,13 +25,16 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorGeolocation:
     :path: "../../node_modules/@capacitor/geolocation"
+  CapacitorSpotify:
+    :path: "../../node_modules/capacitor-spotify"
 
 SPEC CHECKSUMS:
   Capacitor: 187bd7847b6f71467015a20200a1a071be3e5f14
   CapacitorApp: 9d53aec7101f7b030a950c5bdc4df8612576b279
   CapacitorCordova: be703980ca797f847c3356f78fa175d21c8330c2
   CapacitorGeolocation: 1f12bbe372b65116e851bd8e3a94cf0ef9bacebb
+  CapacitorSpotify: 964c4e5350bbd2c4d61b775d5915e417e747d011
 
-PODFILE CHECKSUM: e1b62c2714985a0f61dcbadd9c2bea4d9360fbfe
+PODFILE CHECKSUM: 746696394962d13bd6302585909f2f27e1c636d0
 
 COCOAPODS: 1.14.3
