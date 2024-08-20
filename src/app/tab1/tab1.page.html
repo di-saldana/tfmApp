@@ -19,6 +19,9 @@
     <ion-img [src]="event.images[0].url"></ion-img>
     <ion-card-header>
       <ion-card-title>{{ event.name }}</ion-card-title> 
+      <ion-icon name="add" (click)="addEvent(event)"
+                style="position: absolute; top: 25px; right: 25px; font-size: 30px; color: var(--ion-color-primary);">
+      </ion-icon>
     </ion-card-header>
 
     <ion-card-content>
@@ -28,16 +31,6 @@
       <ion-icon name="location" style="font-size: 25px;"></ion-icon>
       {{ event._embedded.venues[0].name }}, {{ event._embedded.venues[0].city.name }}
     </ion-card-content>
-
-    <div style="margin-left: 15px; margin-bottom: 15px;"> 
-      <ion-button shape="round" class="ion-align-self-center">
-        <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
-      </ion-button>
-
-      <ion-button shape="round" class="ion-align-self-center" (click)="addEvent(event)">
-        <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
-      </ion-button>
-    </div>
   </ion-card>
 
   <ion-footer>
