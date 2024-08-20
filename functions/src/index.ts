@@ -15,14 +15,31 @@ import * as admin from 'firebase-admin';
 import axios from 'axios';
 import * as querystring from 'querystring';
 
-admin.initializeApp();
+import { initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBtJUTpiMKyOdMO9bQIAXeo2dJMLqv9ivw",
+    authDomain: "tfm-app-dsl.firebaseapp.com",
+    projectId: "tfm-app-dsl",
+    storageBucket: "tfm-app-dsl.appspot.com",
+    messagingSenderId: "461018850659",
+    appId: "1:461018850659:web:7eb90af5074752c6349f56",
+    measurementId: "G-BH6F87Y410"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// Initialize Firestore
+const db = getFirestore(app);
 
 const spotifyClientId = '63e107aee6b549d980b4075dcd9a93f2';
 const spotifyClientSecret = '6a0b6804cd0448c8ad35fb1da92925e3';
 const redirectUri = 'http://localhost:8100/tabs/tab1' // 'https://tfm-app-dsl.firebaseapp.com/__/auth/handler' 
 
 export const login = functions.https.onRequest((req, res) => {
-  const scopes = 'user-read-private user-read-email';
+  const scopes = 'user-read-private user-read-email user-read-playback-state user-modify-playback-state user-read-currently-playing user-library-read user-library-modify playlist-read-private playlist-modify-public playlist-modify-private user-read-recently-played user-top-read user-follow-read user-follow-modify user-read-playback-position user-read-playback-state' // 'user-read-private user-read-email user-top-read';
   const authUrl = `https://accounts.spotify.com/authorize?${querystring.stringify({
     client_id: spotifyClientId,
     response_type: 'code',

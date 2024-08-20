@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TicketmasterService } from '../api/ticketmaster/ticketmaster.service'
 import { from } from 'rxjs';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { SpotifyService } from '../api/spotify/spotify.service';
 
 @Component({
   selector: 'app-tab1',
@@ -11,9 +13,10 @@ import { from } from 'rxjs';
 export class Tab1Page implements OnInit {
   evento: any; 
 
-  constructor(private activatedRoute: ActivatedRoute, private ticketmasterAPIService: TicketmasterService) {}
+  constructor(private activatedRoute: ActivatedRoute, private ticketmasterAPIService: TicketmasterService, private firestore: AngularFirestore, private spotifyService: SpotifyService) {}
 
   ngOnInit() {
+    // this.spotifyService.onPageLoad();
     console.log(this.ticketmasterAPIService.getEventsByPostalCode('08038')) // Madrid '28009'
 
     const eventsPromise = this.ticketmasterAPIService.getEventsByPostalCode('08038');
@@ -28,6 +31,14 @@ export class Tab1Page implements OnInit {
         console.log(err);
       }
     );
+  }
+
+  addEvent(event: any) {
+    this.firestore.collection('event').add(event).then(() => {
+      console.log('Event added successfully');
+    }).catch(error => {
+      console.error('Error adding user: ', error);
+    });
   }
 
 }
