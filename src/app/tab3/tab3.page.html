@@ -14,7 +14,7 @@
   </ion-header>
 
   <ion-card>
-      <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" />
+      <img alt="Profile Image" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
       <ion-card-header>
         <ion-card-title>{{ userName }}, {{ userAge }}</ion-card-title>
         <ion-card-subtitle>{{ userDistance }} mi</ion-card-subtitle>
@@ -24,43 +24,78 @@
   <ion-card>
     <ion-card-content>
       <ion-label>
-        <h3>Favorite Artists</h3>
+        <h2>My Events</h2>
       </ion-label>
-      <ion-chip *ngFor="let artist of favoriteArtists">
-        <ion-label>{{ artist }}</ion-label>
+
+      <ion-chip style="margin-top: 15px;" *ngFor="let event of events">
+        <ion-avatar>
+          <img alt="Artist Image" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+        </ion-avatar>
+        <ion-label>{{ event }}</ion-label>
       </ion-chip>
+      
     </ion-card-content>
   </ion-card>
 
   <ion-card>
     <ion-card-content>
       <ion-label>
-        <h3>Favorite Songs</h3>
+        <h2>Top Artists</h2>
       </ion-label>
-      <ion-chip *ngFor="let song of favoriteSongs">
+  
+      <div style="display: flex; margin-top: 15px; gap: 10px;">
+        <ion-avatar *ngFor="let artist of favoriteArtists" style="width: 80px; height: 80px;">
+          <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="Artist Avatar"> 
+        
+          <ion-popover trigger="hover-trigger" triggerAction="hover">
+            <ng-template>
+              <ion-content class="ion-padding">{{ artist }}</ion-content>
+            </ng-template>
+          </ion-popover>
+        </ion-avatar>
+      </div>
+      
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-content>
+      <ion-label>
+        <h2>Top Albums</h2>
+      </ion-label>
+  
+      <div style="display: flex; margin-top: 15px; gap: 10px;">
+        <ion-avatar *ngFor="let album of favoriteAlbums" style="width: 80px; height: 80px;">
+          <img src="https://ionicframework.com/docs/img/demos/card-media.png" alt="Album Avatar">
+        </ion-avatar>
+      </div>
+      
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-content>
+      <ion-label>
+        <h2>Top Tracks</h2>
+      </ion-label>
+
+      <ion-chip style="margin-top: 15px;" *ngFor="let song of favoriteSongs">
+        <ion-avatar>
+          <img alt="Artist Image" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+        </ion-avatar>
         <ion-label>{{ song }}</ion-label>
       </ion-chip>
+
     </ion-card-content>
   </ion-card>
 
   <ion-card>
     <ion-card-content>
       <ion-label>
-        <h3>Favorite Music Genres</h3>
+        <h2>Top Music Genres</h2>
       </ion-label>
-      <ion-chip *ngFor="let genre of favoriteGenres">
+      <ion-chip style="margin-top: 15px;" *ngFor="let genre of favoriteGenres">
         <ion-label>{{ genre }}</ion-label>
-      </ion-chip>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card>
-    <ion-card-content>
-      <ion-label>
-        <h3>My Events</h3>
-      </ion-label>
-      <ion-chip *ngFor="let event of events">
-        <ion-label>{{ event }}</ion-label>
       </ion-chip>
     </ion-card-content>
   </ion-card>

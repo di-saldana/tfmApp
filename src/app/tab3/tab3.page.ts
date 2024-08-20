@@ -10,7 +10,8 @@ export class Tab3Page {
   userAge: number = 25;
   userDistance: number = 0; 
   favoriteArtists: string[] = ['Lorde', 'Declan McKenna', 'Hozier'];
-  favoriteSongs: string[] = ['Unknown / Nth', 'The Key to Life on Earth', 'Team'];
+  favoriteSongs: string[] = ['Unknown / Nth', 'Team', 'The Key to Life on Earth'];
+  favoriteAlbums: string[] = ['Melodrama', 'Unreal Unearth', 'Zeros', 'YHLQMDLG'];
   favoriteGenres: string[] = ['Indie pop', 'Alternative', 'Latin rock'];
   events: string[] = ['Event 1', 'Event 2'];
 

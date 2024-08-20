@@ -10,15 +10,16 @@ export class Tab2Page {
   profiles = [
     {
       name: 'Match 1',
-      image: 'https://ionicframework.com/docs/img/demos/card-media.png',
+      image: 'https://ionicframework.com/docs/img/demos/avatar.svg',
       location: 'New York',
-      events: ['Concert 1', 'Concert 2', 'Concert 3']
+      events: ['Event 1', 'Event 2']
+      // Mostrar todos sus eventos pero solo resaltar (con otro color) los eventos en los cuales ambos matchearon
     },
     {
       name: 'Match 2',
-      image: 'https://ionicframework.com/docs/img/demos/card-media.png',
+      image: 'https://ionicframework.com/docs/img/demos/avatar.svg',
       location: 'Los Angeles',
-      events: ['Concert 1', 'Concert 2', 'Concert 3']
+      events: ['Event 1', 'Event 2', 'Event 3']
     }
   ];
 
