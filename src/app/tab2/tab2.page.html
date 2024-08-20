@@ -9,8 +9,38 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Match</ion-title>
+      <ion-title size="large">Matches</ion-title>
     </ion-toolbar>
   </ion-header>
 
+  <ion-list>
+    <ion-item *ngFor="let profile of profiles" lines="none" style="width: 100%;">
+      <ion-card style="width: 100%;">
+        <ion-card-content>
+          <div style="display: flex; align-items: center;">
+            
+            <ion-avatar slot="start">
+              <img [src]="profile.image" alt="Profile Image">
+            </ion-avatar>
+
+            <div style="margin-left: 15px;">
+              <h2 style="margin: 0;">{{ profile.name }}</h2>
+              <p style="margin: 0; color: gray;">{{ profile.location }}</p>
+            </div>
+
+          </div>
+
+          <div style="margin-top: 10px;"> 
+            <ion-chip *ngFor="let event of profile.events">
+              <ion-label>{{ event }}</ion-label>
+            </ion-chip>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </ion-item>
+  </ion-list>
+
+  <ion-footer>
+    <ion-toolbar style="visibility: hidden;"/>
+  </ion-footer>
 </ion-content>

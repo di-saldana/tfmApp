@@ -29,12 +29,18 @@
       {{ event._embedded.venues[0].name }}, {{ event._embedded.venues[0].city.name }}
     </ion-card-content>
 
-    <ion-button shape="round" class="ion-align-self-center">
-      <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
-    </ion-button>
+    <div style="margin-left: 15px; margin-bottom: 15px;"> 
+      <ion-button shape="round" class="ion-align-self-center">
+        <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
+      </ion-button>
 
-    <ion-button shape="round" class="ion-align-self-center" (click)="addEvent(event)">
-      <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
-    </ion-button>
+      <ion-button shape="round" class="ion-align-self-center" (click)="addEvent(event)">
+        <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+      </ion-button>
+    </div>
   </ion-card>
+
+  <ion-footer>
+    <ion-toolbar style="visibility: hidden;"/>
+  </ion-footer>
 </ion-content>
