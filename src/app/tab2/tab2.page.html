@@ -24,8 +24,9 @@
             </ion-avatar>
 
             <div style="margin-left: 15px;">
-              <h1 style="margin: 0;">{{ profile.name }}, {{ profile.age }}</h1>
-              <p style="margin: 0; color: gray;">{{ profile.location }}</p>
+              <!-- <h1 style="margin: 0;">{{ profile.name }}, {{ profile.age }}</h1> -->
+              <ion-card-title>{{ profile.name }}, {{ profile.age }}</ion-card-title>
+              <h2 style="margin: 0; color: gray;">{{ profile.location }}</h2>
             </div>
 
             <ion-icon name="chatbubble-outline" (click)="goToChat(profile)"
