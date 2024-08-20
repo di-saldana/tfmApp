@@ -22,10 +22,10 @@
     </ion-card-header>
 
     <ion-card-content>
-      <ion-icon name="calendar"></ion-icon>
-      {{ event.dates.start.localDate }} 
+      <ion-icon name="calendar" style="font-size: 25px;"></ion-icon>
+      {{ event.dates.start.localDate }}
       <br>  
-      <ion-icon name="pin"></ion-icon>
+      <ion-icon name="location" style="font-size: 25px;"></ion-icon>
       {{ event._embedded.venues[0].name }}, {{ event._embedded.venues[0].city.name }}
     </ion-card-content>
 

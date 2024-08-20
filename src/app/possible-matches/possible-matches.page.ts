@@ -21,7 +21,7 @@ export class PossibleMatchesPage implements OnInit {
       name: 'Miguel',
       age: '30',
       image: 'https://ionicframework.com/docs/img/demos/avatar.svg',
-      location: 'España',
+      location: 'Spain',
       events: ['Event 1', 'Event 2', 'Event 3'],
       artists: ['Young the Giant', 'Izal']
     }

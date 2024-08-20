@@ -19,7 +19,7 @@
         <ion-card-content>
           <div style="display: flex; align-items: center;">
             
-            <ion-avatar slot="start">
+            <ion-avatar slot="start" (click)="goToProfile(profile)">
               <img [src]="profile.image" alt="Profile Image">
             </ion-avatar>
 
