@@ -1,12 +1,11 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-tab2',
-  templateUrl: 'tab2.page.html',
-  styleUrls: ['tab2.page.scss']
+  selector: 'app-possible-matches',
+  templateUrl: './possible-matches.page.html',
+  styleUrls: ['./possible-matches.page.scss'],
 })
-export class Tab2Page {
+export class PossibleMatchesPage implements OnInit {
 
   profiles = [
     {
@@ -14,7 +13,7 @@ export class Tab2Page {
       age: '20',
       image: 'https://ionicframework.com/docs/img/demos/avatar.svg',
       location: 'New York',
-      events: ['Event 1'],
+      events: ['Event 1', 'Event 2'],
       artists: ['Phoebe Bridgers', 'Arlo Parks']
       // Mostrar todos sus eventos pero solo resaltar (con otro color) los eventos en los cuales ambos matchearon
     },
@@ -23,14 +22,13 @@ export class Tab2Page {
       age: '30',
       image: 'https://ionicframework.com/docs/img/demos/avatar.svg',
       location: 'España',
-      events: ['Event 3'],
+      events: ['Event 1', 'Event 2', 'Event 3'],
       artists: ['Young the Giant', 'Izal']
     }
   ];
 
-  constructor(private router: Router) {}
+  constructor() { }
 
-  goToChat(profile: any) {
-    this.router.navigate(['/chat'], { queryParams: { profileId: profile.id, profileName: profile.name } });
+  ngOnInit() {
   }
 }

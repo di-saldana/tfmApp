@@ -27,7 +27,7 @@
         <h2>My Events</h2>
       </ion-label>
 
-      <ion-chip style="margin-top: 15px;" *ngFor="let event of events">
+      <ion-chip style="margin-top: 15px;" *ngFor="let event of events" (click)="goToPossibleMatches()">
         <ion-avatar>
           <img alt="Artist Image" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
         </ion-avatar>
