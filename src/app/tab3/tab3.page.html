@@ -43,4 +43,15 @@
       </ion-chip>
     </ion-card-content>
   </ion-card>
+
+  <ion-card>
+    <ion-card-content>
+      <ion-label>
+        <h3>My Events</h3>
+      </ion-label>
+      <ion-chip *ngFor="let event of events">
+        <ion-label>{{ event }}</ion-label>
+      </ion-chip>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
