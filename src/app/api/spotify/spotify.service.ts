@@ -308,4 +308,38 @@ export class SpotifyService {
     const data = localStorage.getItem('radio_button');
     return data ? JSON.parse(data) : [];
   }
+
+  // Método para obtener el id de un usuario de Spotify
+  // Se usa el token de acceso del usuario que ha conectado su cuenta de Spotify.
+  async fetchUserId(): Promise<any> {
+    const token = localStorage.getItem('access_token');
+
+    return new Promise((resolve) => {
+      const url = '' + token;
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+      };
+      let myRequest = new Request(url, options);
+
+      fetch(myRequest)
+        .then(function (res) {
+          return res.json();
+        })
+        .then(function (data) {
+          resolve(data);
+        })
+        .catch(function (error) {
+          console.log(
+            'There has been a problem with your fetch operation: ' +
+              error.message
+          );
+          throw error;
+        });
+    });
+  }
 }
+
