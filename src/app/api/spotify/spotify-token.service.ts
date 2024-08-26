@@ -7,8 +7,7 @@ export class SpotifyTokenService {
 
   client_id = '63e107aee6b549d980b4075dcd9a93f2'; 
   url = 'https://accounts.spotify.com/api/token';
-  // redirect_uri = 'es.ua.mastermoviles.dsl.tfm';
-  redirect_uri = 'http://localhost:8100/tabs/tab1';
+  redirect_uri = 'https://us-central1-tfm-app-dsl.cloudfunctions.net/callback';// 'https://tfm-app-dsl.firebaseapp.com/__/auth/handler'; // 'http://localhost:8100/tabs/tab1'; // 'es.ua.mastermoviles.dsl.tfm';
 
   constructor() {}
 
@@ -43,7 +42,7 @@ export class SpotifyTokenService {
   // setlist sin estar logueado en Spotify.
   getInitToken = () => {
     return new Promise(async (resolve) => {
-      const url = ''; 
+      const url = 'https://us-central1-tfm-app-dsl.cloudfunctions.net/callback'; // 'https://tfm-app-dsl.firebaseapp.com/__/auth/handler'; 
       const options = {
         method: 'POST',
         headers: {

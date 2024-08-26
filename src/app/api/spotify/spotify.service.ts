@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
 export class SpotifyService {
   private client_id = '63e107aee6b549d980b4075dcd9a93f2';
   private client_secret = '6a0b6804cd0448c8ad35fb1da92925e3';
-  private redirect_uri = 'http://localhost:8100/tabs/tab1'; 
+  private redirect_uri = 'https://us-central1-tfm-app-dsl.cloudfunctions.net/callback'; // 'http://localhost:8100/tabs/tab1'; 
 
   private access_token: string | null = null;
   private refresh_token: string | null = null;
