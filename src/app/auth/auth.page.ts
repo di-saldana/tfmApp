@@ -30,6 +30,7 @@ export class AuthPage implements OnInit {
 
       this.firebaseService.signin(this.form.value as User).then(res => {
         // console.log(res);
+        this.getUserInfo(res.user.uid);
         this.utilsService.routerLink('/tabs'); 
         this.form.reset();
       }).catch(error => {
@@ -41,6 +42,32 @@ export class AuthPage implements OnInit {
           position: 'middle',
           icon: 'alert-circle-outline'
         })
+      }).finally(() => {
+        loading.dismiss();
+      })
+    }
+  }
+
+  async getUserInfo(uid: string) {
+    if (this.form.valid) {
+      const loading = await this.utilsService.loading(); 
+      await loading.present();
+
+      let path = `users/${uid}`;
+
+      this.firebaseService.getDocument(path).then((user: User) => {
+        this.utilsService.saveInLocalStorage('user', user)
+        this.utilsService.routerLink('/tabs'); 
+        this.form.reset();
+
+        this.utilsService.presentToast({
+          message: `Welcome Pal, ${user.name}!`,
+          duration: 1500,
+          position: 'middle',
+          icon: 'person-circle-outline'
+        })
+      }).catch(error => {
+        console.log(error);
       }).finally(() => {
         loading.dismiss();
       })
