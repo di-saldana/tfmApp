@@ -29,7 +29,9 @@ export class AuthPage implements OnInit {
       await loading.present();
 
       this.firebaseService.signin(this.form.value as User).then(res => {
-        console.log(res);
+        // console.log(res);
+        this.utilsService.routerLink('/tabs'); 
+        this.form.reset();
       }).catch(error => {
         console.log(error);
 
