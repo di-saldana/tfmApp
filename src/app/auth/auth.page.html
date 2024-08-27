@@ -1,12 +1,9 @@
 <app-header title="Log In"></app-header>
 
 <ion-content>
-
     <div class="d-flex-center">
         <form [formGroup]="form" class="auth-form" (ngSubmit)="submit()" (keypress.enter)="submit()">
-
-            <!-- <app-logo></app-logo> -->
-
+            <app-logo></app-logo>
             <app-custom-input 
                 autocomplete="email"
                 icon="mail-outline"

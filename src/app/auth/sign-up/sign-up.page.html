@@ -1,11 +1,18 @@
-<app-header title="Sign Up"></app-header>
+<!-- <app-header backButton="/auth" title="Sign Up"></app-header> -->
+<ion-header [translucent]="true">
+    <ion-toolbar>
+      <ion-title>Sign Up</ion-title>
+  
+      <ion-buttons slot="start">
+        <ion-back-button defaultHref="/auth"></ion-back-button>
+      </ion-buttons>
+    </ion-toolbar>
+</ion-header>
 
 <ion-content>
-
     <div class="d-flex-center">
         <form [formGroup]="form" class="auth-form" (ngSubmit)="submit()" (keypress.enter)="submit()">
-
-            <!-- <app-logo></app-logo> -->
+            <app-logo></app-logo>
 
             <!-- Name -->
             <app-custom-input 
