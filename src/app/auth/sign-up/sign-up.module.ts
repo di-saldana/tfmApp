@@ -4,19 +4,19 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { ChatPageRoutingModule } from './chat-routing.module';
+import { SignUpPageRoutingModule } from './sign-up-routing.module';
 
-import { ChatPage } from './chat.page';
-import { SharedModule } from '../shared/shared.module';
+import { SignUpPage } from './sign-up.page';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ChatPageRoutingModule,
+    SignUpPageRoutingModule,
     SharedModule
   ],
-  declarations: [ChatPage]
+  declarations: [SignUpPage]
 })
-export class ChatPageModule {}
+export class SignUpPageModule {}

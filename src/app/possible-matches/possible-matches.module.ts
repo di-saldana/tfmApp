@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { PossibleMatchesPageRoutingModule } from './possible-matches-routing.module';
 
 import { PossibleMatchesPage } from './possible-matches.page';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    PossibleMatchesPageRoutingModule
+    PossibleMatchesPageRoutingModule,
+    SharedModule
   ],
   declarations: [PossibleMatchesPage]
 })
