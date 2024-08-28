@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TicketmasterService } from '../api/ticketmaster/ticketmaster.service'
 import { from } from 'rxjs';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { SpotifyService } from '../api/spotify/spotify.service';
+import { FirebaseService } from '../services/firebase.service';
+import { UtilsService } from '../services/utils.service';
 
 @Component({
   selector: 'app-tab1',
@@ -14,6 +16,9 @@ export class Tab1Page implements OnInit {
   evento: any; 
 
   constructor(private activatedRoute: ActivatedRoute, private ticketmasterAPIService: TicketmasterService, private firestore: AngularFirestore, private spotifyService: SpotifyService) {}
+
+  firebaseService = inject(FirebaseService);
+  utilsService = inject(UtilsService);  
 
   ngOnInit() {
     // this.spotifyService.onPageLoad();
@@ -39,6 +44,10 @@ export class Tab1Page implements OnInit {
     }).catch(error => {
       console.error('Error adding user: ', error);
     });
+  }
+
+  signOut() {
+    this.firebaseService.signout();
   }
 
 }
