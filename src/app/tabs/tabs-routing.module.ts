@@ -24,6 +24,10 @@ const routes: Routes = [
         loadChildren: () => import('../possible-matches/possible-matches.module').then(m => m.PossibleMatchesPageModule)
       },
       {
+        path: 'chat',
+        loadChildren: () => import('../chat/chat.module').then( m => m.ChatPageModule)
+      },
+      {
         path: '',
         redirectTo: '/tabs/tab1',
         pathMatch: 'full'

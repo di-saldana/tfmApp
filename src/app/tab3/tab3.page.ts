@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { FirebaseService } from '../services/firebase.service';
+import { UtilsService } from '../services/utils.service';
 
 @Component({
   selector: 'app-tab3',
@@ -18,7 +20,14 @@ export class Tab3Page {
 
   constructor(private router: Router) {}
 
+  firebaseService = inject(FirebaseService);
+  utilsService = inject(UtilsService);  
+
   goToPossibleMatches() {
     this.router.navigate(['/tabs/possible-matches']);
+  }
+
+  signOut() {
+    this.firebaseService.signout();
   }
 }

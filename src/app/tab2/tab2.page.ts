@@ -31,7 +31,7 @@ export class Tab2Page {
   constructor(private router: Router) {}
 
   goToChat(profile: any) {
-    this.router.navigate(['/chat'], { queryParams: { profileId: profile.id, profileName: profile.name } });
+    this.router.navigate(['/tabs/chat'], { queryParams: { profileId: profile.id, profileName: profile.name } });
   }
 
   goToProfile(profile: any) {

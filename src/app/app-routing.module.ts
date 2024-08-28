@@ -6,24 +6,12 @@ import { AuthGuard } from './guards/auth.guard';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'auth', // 'login' // Default page
+    redirectTo: 'auth', // Default page
     pathMatch: 'full'
   },
-  // {
-  //   path: 'login',
-  //   loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule)
-  // },
   {
     path: 'tabs',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule), canActivate: [AuthGuard]
-  },
-  {
-    path: 'chat',
-    loadChildren: () => import('./chat/chat.module').then( m => m.ChatPageModule), canActivate: [AuthGuard]
-  },
-  {
-    path: 'possible-matches',
-    loadChildren: () => import('./possible-matches/possible-matches.module').then( m => m.PossibleMatchesPageModule), canActivate: [AuthGuard]
   },
   {
     path: 'auth',

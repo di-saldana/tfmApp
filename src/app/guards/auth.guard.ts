@@ -16,18 +16,18 @@ export class AuthGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     
-      let user = localStorage.getItem('user');
+    let user = localStorage.getItem('user');
 
-      return new Promise((resolve) => {
-        this.firebaseService.getAuth().onAuthStateChanged((auth) => {
-          if(auth) {
-            if(user) resolve(true);
-          } else {
-            this.utilsService.routerLink('/auth');
-            resolve(false);
-          }
-        })
-      });
+    return new Promise((resolve) => {
+      this.firebaseService.getAuth().onAuthStateChanged((auth) => {
+        if(auth) {
+          if(user) resolve(true);
+        } else {
+          this.firebaseService.signout();
+          resolve(false);
+        }
+      })
+    });
   }
   
 }
