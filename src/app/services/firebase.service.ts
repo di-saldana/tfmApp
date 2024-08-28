@@ -13,6 +13,10 @@ export class FirebaseService {
   auth = inject(AngularFireAuth);
   firestore = inject(AngularFirestore);
 
+  getAuth() {
+    return getAuth();
+  }
+
   // Autenticacion
   signin(user: User) {
     return signInWithEmailAndPassword(getAuth(), user.email, user.password);

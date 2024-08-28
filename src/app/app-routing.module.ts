@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { NoAuthGuard } from './guards/no-auth.guard';
+import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
   {
@@ -13,19 +15,19 @@ const routes: Routes = [
   // },
   {
     path: 'tabs',
-    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule), canActivate: [AuthGuard]
   },
   {
     path: 'chat',
-    loadChildren: () => import('./chat/chat.module').then( m => m.ChatPageModule)
+    loadChildren: () => import('./chat/chat.module').then( m => m.ChatPageModule), canActivate: [AuthGuard]
   },
   {
     path: 'possible-matches',
-    loadChildren: () => import('./possible-matches/possible-matches.module').then( m => m.PossibleMatchesPageModule)
+    loadChildren: () => import('./possible-matches/possible-matches.module').then( m => m.PossibleMatchesPageModule), canActivate: [AuthGuard]
   },
   {
     path: 'auth',
-    loadChildren: () => import('./auth/auth.module').then( m => m.AuthPageModule)
+    loadChildren: () => import('./auth/auth.module').then( m => m.AuthPageModule), canActivate: [NoAuthGuard]
   },
 ];
 @NgModule({
