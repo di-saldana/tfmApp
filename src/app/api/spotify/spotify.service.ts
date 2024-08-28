@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
 export class SpotifyService {
   private client_id = '63e107aee6b549d980b4075dcd9a93f2';
   private client_secret = '6a0b6804cd0448c8ad35fb1da92925e3';
-  private redirect_uri = 'https://us-central1-tfm-app-dsl.cloudfunctions.net/callback'; // 'http://localhost:8100/tabs/tab1'; 
+  private redirect_uri = 'http://localhost:8100/tabs/tab1'; // 'https://tfm-app-dsl.firebaseapp.com/__/auth/handler'; // 'https://us-central1-tfm-app-dsl.cloudfunctions.net/callback';
 
   private access_token: string | null = null;
   private refresh_token: string | null = null;
@@ -321,6 +321,42 @@ export class SpotifyService {
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
+        },
+      };
+      let myRequest = new Request(url, options);
+
+      fetch(myRequest)
+        .then(function (res) {
+          return res.json();
+        })
+        .then(function (data) {
+          resolve(data);
+        })
+        .catch(function (error) {
+          console.log(
+            'There has been a problem with your fetch operation: ' +
+              error.message
+          );
+          throw error;
+        });
+    });
+  }
+
+  // Método para obtener los datos por nombre de un artista de Spotify
+  // sin necesidad de autenticación por parte del usuario.
+  async getSpotifyArtist(artist: any): Promise<any> {
+    const token = localStorage.getItem('init_access_token');
+
+    return new Promise((resolve) => {
+      const url =
+        'https://api.spotify.com/v1/search?q=' +
+        artist +
+        '&type=artist&limit=20';
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + token,
         },
       };
       let myRequest = new Request(url, options);

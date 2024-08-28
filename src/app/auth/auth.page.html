@@ -30,11 +30,19 @@
 
             <p routerLink="forgot-pass" class="ion-text-end">Forgot your password?</p>
 
+            <!-- Login -->
             <ion-button expand="block" mode="ios" class="submit" type="submit" [disabled]="form.invalid">
                 Log In
                 <ion-icon slot="end" name="log-in-outline"></ion-icon>
             </ion-button>
 
+            <!-- Login with Spotify -->
+            <ion-button (click)="requestAuthorization()" class="ion-margin-top" expand="block" mode="ios" fill="outline">
+                Log In with Spotify
+                <ion-icon slot="end" name="musical-notes-outline"></ion-icon>
+            </ion-button> 
+
+            <!-- Sign Up -->
             <ion-button class="ion-margin-top" routerLink="sign-up" expand="block" mode="ios" fill="outline">
                 Sign Up
                 <ion-icon slot="end" name="person-add-outline"></ion-icon>
