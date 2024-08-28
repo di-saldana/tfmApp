@@ -19,7 +19,6 @@ export class SignUpPage implements OnInit {
   })
 
   firebaseService = inject(FirebaseService);
-
   utilsService = inject(UtilsService)
 
   ngOnInit() {

@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { getFirestore, setDoc, doc, getDoc } from '@angular/fire/firestore'
+import { getFirestore, setDoc, doc, getDoc, updateDoc, arrayUnion } from '@angular/fire/firestore'
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, sendPasswordResetEmail } from 'firebase/auth';
 import { User } from '../models/user.model';
 import { UtilsService } from './utils.service';
@@ -43,7 +43,6 @@ export class FirebaseService {
   }
 
   // Base de Datos
-
   setDocument(path: string, data: any) {
     return setDoc(doc(getFirestore(), path), data);
   }
@@ -52,5 +51,16 @@ export class FirebaseService {
     return (await getDoc(doc(getFirestore(), path))).data();
   }
 
+  addEventToUser(userId: string, eventId: string) {
+    if (!userId) {
+      throw new Error('User ID is missing');
+    }
+    
+    const userDocRef = doc(getFirestore(), `users/${userId}`);
+
+    return updateDoc(userDocRef, {
+      saved_events: arrayUnion(eventId)
+    });
+  }
 
 }

@@ -14,6 +14,8 @@ import { UtilsService } from '../services/utils.service';
 })
 export class Tab1Page implements OnInit {
   evento: any; 
+  userId: string = '';  
+  events: any[] = [];   
 
   constructor(private activatedRoute: ActivatedRoute, private ticketmasterAPIService: TicketmasterService, private firestore: AngularFirestore, private spotifyService: SpotifyService) {}
 
@@ -36,14 +38,41 @@ export class Tab1Page implements OnInit {
         console.log(err);
       }
     );
+
+    const user = this.utilsService.getFromLocalStorage('user'); 
+    if (user && user.uid) {
+      this.userId = user.uid;
+    } else {
+      console.error('User ID is not available');
+    }
   }
 
-  addEvent(event: any) {
-    this.firestore.collection('event').add(event).then(() => {
-      console.log('Event added successfully');
-    }).catch(error => {
-      console.error('Error adding user: ', error);
-    });
+  // Function to add an event when the user clicks the "Add" button
+  async addEvent(eventId: string) {
+    const loading = await this.utilsService.loading();
+    await loading.present();
+
+    this.firebaseService.addEventToUser(this.userId, eventId)
+      .then(() => {
+        this.utilsService.presentToast({
+          message: 'Event added successfully!',
+          duration: 2000,
+          position: 'bottom',
+          icon: 'checkmark-circle-outline'
+        });
+      })
+      .catch((error) => {
+        this.utilsService.presentToast({
+          message: 'Error adding event: ' + error.message,
+          duration: 2500,
+          position: 'bottom',
+          icon: 'alert-circle-outline'
+        });
+        console.error('Error adding event: ', error);
+      })
+      .finally(() => {
+        loading.dismiss();
+      });
   }
 
   signOut() {
