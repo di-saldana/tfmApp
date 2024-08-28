@@ -1,8 +1,20 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Match
-    </ion-title>
+    <ion-title>Matches</ion-title>
+
+    <!-- Settings -->
+    <ion-buttons slot="start">
+      <ion-button routerLink="/tabs/settings">  
+        <ion-icon name="settings-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <!-- Chat -->
+    <ion-buttons slot="end">
+      <ion-button routerLink="/tabs/chat">
+        <ion-icon name="chatbubble-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -22,7 +34,6 @@
         </ion-avatar>
 
         <div style="margin-left: 15px;">
-          <!-- <h1 style="margin: 0;">{{ profile.name }}, {{ profile.age }}</h1> -->
           <ion-card-title>{{ profile.name }}, {{ profile.age }}</ion-card-title>
           <h2 style="margin: 0; color: gray;">{{ profile.location }}</h2>
         </div>

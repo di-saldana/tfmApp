@@ -1,8 +1,20 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Events
-    </ion-title>
+    <ion-title>Events</ion-title>
+
+    <!-- Settings -->
+    <ion-buttons slot="start">
+      <ion-button routerLink="/tabs/settings"> 
+        <ion-icon name="settings-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <!-- Chat -->
+    <ion-buttons slot="end">
+      <ion-button routerLink="/tabs/chat">
+        <ion-icon name="chatbubble-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
