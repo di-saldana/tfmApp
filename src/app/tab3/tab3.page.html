@@ -40,9 +40,6 @@
       </ion-label>
 
       <ion-chip style="margin-top: 15px;" *ngFor="let event of events" (click)="goToPossibleMatches()">
-        <ion-avatar>
-          <img alt="Artist Image" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-        </ion-avatar>
         <ion-label>{{ event }}</ion-label>
       </ion-chip>
       

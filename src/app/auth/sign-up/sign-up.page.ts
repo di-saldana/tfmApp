@@ -60,7 +60,7 @@ export class SignUpPage implements OnInit {
 
       this.firebaseService.setDocument(path, this.form.value).then(async res => {
         this.utilsService.saveInLocalStorage('user', this.form.value)
-        this.utilsService.routerLink('/tabs'); 
+        this.utilsService.routerLink('/tabs/tab1');  // auth
         this.form.reset();
       }).catch(error => {
         console.log(error);

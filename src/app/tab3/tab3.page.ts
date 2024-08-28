@@ -17,16 +17,27 @@ export class Tab3Page {
   favoriteSongs: string[] = ['Unknown / Nth', 'Team', 'The Key to Life on Earth'];
   favoriteAlbums: string[] = ['Melodrama', 'Unreal Unearth', 'Zeros', 'YHLQMDLG'];
   favoriteGenres: string[] = ['Indie pop', 'Alternative', 'Latin rock'];
-  events: string[] = ['Event 1', 'Event 2', 'Event 3'];
+  events: string[] = [];
   artistImages: string[] = []; 
+  userId: string = '';  
 
   constructor(
     private router: Router, 
     public spotifyService: SpotifyService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    const user = this.utilsService.getFromLocalStorage('user'); 
+    if (user && user.uid) {
+      this.userId = user.uid;
+    } else {
+      console.error('User ID is not available');
+    }
+
+    this.userName = user.name;
+
     // this.loadArtistImages();
+    this.loadSavedEvents(user.uid);
   }
 
   firebaseService = inject(FirebaseService);
@@ -52,5 +63,18 @@ export class Tab3Page {
         this.artistImages.push('https://ionicframework.com/docs/img/demos/avatar.svg'); // Default image if error occurs
       }
     }
+  }
+  
+  // Method to load saved events
+  loadSavedEvents(userId: string) {
+    this.firebaseService.getSavedEvents(userId).subscribe(
+      events => {
+        this.events = events;
+        console.log('Saved Events:', this.events);
+      },
+      error => {
+        console.error('Error loading saved events:', error);
+      }
+    );
   }
 }

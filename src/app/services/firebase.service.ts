@@ -1,19 +1,25 @@
 import { inject, Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { getFirestore, setDoc, doc, getDoc, updateDoc, arrayUnion } from '@angular/fire/firestore'
+import { getFirestore, setDoc, doc, getDoc, updateDoc, arrayUnion, collection, getDocs } from '@angular/fire/firestore'
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, sendPasswordResetEmail } from 'firebase/auth';
 import { User } from '../models/user.model';
 import { UtilsService } from './utils.service';
+import { catchError, map, Observable, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
+  getUserEvents(userId: string) {
+    throw new Error('Method not implemented.');
+  }
 
   auth = inject(AngularFireAuth);
   firestore = inject(AngularFirestore);
   utilService = inject(UtilsService);
+
+  // constructor(private firestore: AngularFirestore) {}
 
   getAuth() {
     return getAuth();
@@ -51,6 +57,7 @@ export class FirebaseService {
     return (await getDoc(doc(getFirestore(), path))).data();
   }
 
+  // Eventos
   addEventToUser(userId: string, eventId: string) {
     if (!userId) {
       throw new Error('User ID is missing');
@@ -63,4 +70,20 @@ export class FirebaseService {
     });
   }
 
+  // Method to get saved_events
+  getSavedEvents(uid: string): Observable<any[]> {
+    return this.firestore.collection('users').doc(uid).valueChanges().pipe(
+      map(userData => {
+        if (userData) {
+          return userData['saved_events'] || []; 
+        } else {
+          return [];
+        }
+      }),
+      catchError(error => {
+        console.error('Error fetching user data:', error);
+        return throwError(() => new Error('Error fetching user data'));
+      })
+    );
+  }
 }

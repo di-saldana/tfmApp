@@ -31,7 +31,8 @@
     <ion-img [src]="event.images[0].url"></ion-img>
     <ion-card-header>
       <ion-card-title>{{ event.name }}</ion-card-title> 
-      <ion-icon name="add" (click)="addEvent(event)"
+      <!-- Ahora mismo estoy guardando solo el nombre del evento (event.name) -->
+      <ion-icon name="add" (click)="addEvent(event.name)"  
                 style="position: absolute; top: 25px; right: 25px; font-size: 30px; color: var(--ion-color-primary);">
       </ion-icon>
     </ion-card-header>
