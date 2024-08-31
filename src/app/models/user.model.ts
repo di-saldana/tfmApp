@@ -4,7 +4,7 @@ export interface User {
     email: string,
     password: string,
     name: string,
-    age: string,
+    age: number,
     profile_picture?: string,
     saved_events?: string[],
     invites?: string[], 

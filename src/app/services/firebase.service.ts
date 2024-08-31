@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { getFirestore, setDoc, doc, getDoc, updateDoc, arrayUnion, collection, getDocs } from '@angular/fire/firestore'
+import { getFirestore, setDoc, doc, getDoc, updateDoc, arrayUnion, collection, getDocs, query, where } from '@angular/fire/firestore'
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, sendPasswordResetEmail } from 'firebase/auth';
 import { User } from '../models/user.model';
 import { UtilsService } from './utils.service';
@@ -33,6 +33,7 @@ export class FirebaseService {
   signout() {
     getAuth().signOut();
     localStorage.removeItem('user');
+    sessionStorage.removeItem('user'); 
     this.utilService.routerLink('/auth');
   }
 
@@ -58,6 +59,7 @@ export class FirebaseService {
   }
 
   // Eventos
+  // TODO: Guardar evento por su id unico, para diferenciar de distintos eventos de un mismo artista
   addEventToUser(userId: string, eventId: string) {
     if (!userId) {
       throw new Error('User ID is missing');
@@ -67,6 +69,19 @@ export class FirebaseService {
 
     return updateDoc(userDocRef, {
       saved_events: arrayUnion(eventId)
+    });
+  }
+
+  // Invites
+  addInviteToUser(userIdA: string, userIdB: string, eventId: string) {
+    if (!userIdA) {
+      throw new Error('User ID is missing');
+    }
+    
+    const userDocRef = doc(getFirestore(), `users/${userIdA}`);
+
+    return updateDoc(userDocRef, {
+      invites: arrayUnion(userIdB)
     });
   }
 
@@ -86,4 +101,35 @@ export class FirebaseService {
       })
     );
   }
+
+  // Function to get users interested in a specific event
+  async getUsersByEvent(event_name: string, ownerUid: string): Promise<any[]> {
+    if (!event_name) {
+      throw new Error('Event name is missing');
+    }
+
+    const db = getFirestore();
+    const usersRef = collection(db, 'users');
+    
+    // Query to find users with the event_name in their saved_events array
+    const q = query(usersRef, where('saved_events', 'array-contains', event_name));
+    
+    const querySnapshot = await getDocs(q);
+
+    // Extract user data from query results
+    const interestedUsers: any[] = [];
+    // querySnapshot.forEach((doc) => {
+    //   const userData = doc.data();
+    //   interestedUsers.push(userData);
+    // });
+    querySnapshot.forEach((doc) => {
+      const userData = doc.data();
+      if (userData['uid'] !== ownerUid) {  // Filter out the owner
+        interestedUsers.push(userData);
+      }
+    });
+
+    return interestedUsers;
+  }
+
 }

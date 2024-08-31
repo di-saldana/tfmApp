@@ -20,6 +20,7 @@ export class Tab3Page {
   events: string[] = [];
   artistImages: string[] = []; 
   userId: string = '';  
+  users_interested: string[] = [];
 
   constructor(
     private router: Router, 
@@ -30,23 +31,28 @@ export class Tab3Page {
     const user = this.utilsService.getFromLocalStorage('user'); 
     if (user && user.uid) {
       this.userId = user.uid;
+      this.userName = user.name;
+      this.userAge = user.age;
+      this.loadSavedEvents(user.uid);
     } else {
       console.error('User ID is not available');
+      this.router.navigate(['/auth']);
     }
 
-    this.userName = user.name;
-
     // this.loadArtistImages();
-    this.loadSavedEvents(user.uid);
   }
 
   firebaseService = inject(FirebaseService);
   utilsService = inject(UtilsService);  
 
-  goToPossibleMatches() {
-    this.router.navigate(['/tabs/possible-matches']);
-  }
+  // goToPossibleMatches() {
+  //   this.router.navigate(['/tabs/possible-matches']);
+  // }
 
+  goToPossibleMatches(selectedEvent: string) {
+    this.router.navigate(['/tabs/possible-matches'], { queryParams: { event: selectedEvent } });
+  }
+  
   signOut() {
     this.firebaseService.signout();
   }
@@ -55,7 +61,7 @@ export class Tab3Page {
     for (let artist of this.favoriteArtists) {
       try {
         const response = await this.spotifyService.getSpotifyArtist(artist);
-        const artistData = response.artists.items[0]; // Get the first matching artist
+        const artistData = response.artists.items[0];
         const imageUrl = artistData?.images[0]?.url || 'https://ionicframework.com/docs/img/demos/avatar.svg'; // Default if no image
         this.artistImages.push(imageUrl);
       } catch (error) {

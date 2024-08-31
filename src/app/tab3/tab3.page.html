@@ -39,7 +39,7 @@
         <h2>Events</h2>
       </ion-label>
 
-      <ion-chip style="margin-top: 15px;" *ngFor="let event of events" (click)="goToPossibleMatches()">
+      <ion-chip style="margin-top: 15px;" *ngFor="let event of events" (click)="goToPossibleMatches(event)">
         <ion-label>{{ event }}</ion-label>
       </ion-chip>
       

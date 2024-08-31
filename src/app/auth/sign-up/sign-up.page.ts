@@ -16,6 +16,7 @@ export class SignUpPage implements OnInit {
     email: new FormControl('', [Validators.required, Validators.email]), 
     password: new FormControl('', [Validators.required]),
     name: new FormControl('', [Validators.required, Validators.minLength(3)]), 
+    age: new FormControl<number>(null, [Validators.required, Validators.min(18)])
   })
 
   firebaseService = inject(FirebaseService);
@@ -55,11 +56,21 @@ export class SignUpPage implements OnInit {
       const loading = await this.utilsService.loading(); 
       await loading.present();
 
+      let formValues = { ...this.form.value };
+      delete formValues.password;
       let path = `users/${uid}`;
-      delete this.form.value.password;
 
-      this.firebaseService.setDocument(path, this.form.value).then(async res => {
-        this.utilsService.saveInLocalStorage('user', this.form.value)
+      const userInfo = {
+        ...formValues, 
+        spotify_id: '', 
+        profile_picture: '', 
+        saved_events: [], 
+        invites: [], 
+        matches: [] 
+      };      
+
+      this.firebaseService.setDocument(path, userInfo).then(async res => {
+        this.utilsService.saveInLocalStorage('user', userInfo)
         this.utilsService.routerLink('/tabs/tab1');  // auth
         this.form.reset();
       }).catch(error => {

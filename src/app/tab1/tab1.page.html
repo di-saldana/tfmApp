@@ -25,7 +25,11 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-searchbar placeholder="Search Event"></ion-searchbar>
+  <ion-searchbar 
+    placeholder="Search Event" 
+    [(ngModel)]="searchTerm"
+    (keyup.enter)="filterEvents(searchTerm)">
+  </ion-searchbar>
 
   <ion-card *ngFor="let event of evento">
     <ion-img [src]="event.images[0].url"></ion-img>
@@ -37,6 +41,7 @@
       </ion-icon>
     </ion-card-header>
 
+    <!-- TODO: Date format legible -->
     <ion-card-content>
       <ion-icon name="calendar" style="font-size: 25px;"></ion-icon>
       {{ event.dates.start.localDate }}
