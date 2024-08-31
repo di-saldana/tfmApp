@@ -4,7 +4,6 @@ import { FirebaseService } from '../services/firebase.service';
 import { User } from '../models/user.model';
 import { UtilsService } from '../services/utils.service';
 import { SpotifyService } from '../api/spotify/spotify.service';
-import { SpotifyTokenService } from 'src/app/api/spotify/spotify-token.service';
 
 @Component({
   selector: 'app-auth',
@@ -15,7 +14,7 @@ export class AuthPage implements OnInit {
 
   userAuthenticated: boolean = false;
 
-  constructor(private spotifyService: SpotifyService, private accessTokenService: SpotifyTokenService) { }
+  constructor(private spotifyService: SpotifyService) { }
 
   form = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]), 
@@ -79,77 +78,29 @@ export class AuthPage implements OnInit {
       })
     }
   }
-
-  // Spotify Authentication - Local
-  requestAuthorization(): void {
-    const clientId = "63e107aee6b549d980b4075dcd9a93f2" 
-    const clientSecret = "6a0b6804cd0448c8ad35fb1da92925e3" 
-    this.spotifyService.requestAuthorization(clientId, clientSecret);
-  }
-
-  // Spotify Authentication - Firebase
+  
+  // Spotify Authentication
   async onAuthClick() {
-    const client_id = '63e107aee6b549d980b4075dcd9a93f2';
-    const redirect_uri = 'https://tfm-app-dsl.firebaseapp.com/__/auth/handler'; // 'https://us-central1-tfm-app-dsl.cloudfunctions.net/callback'; // 'http://localhost:8100/tabs/tab1';
-    const scopes = 'user-read-private user-read-email user-modify-playback-state user-read-playback-position user-library-read streaming user-read-playback-state user-read-recently-played playlist-read-private';
-    
-    // Construct the Spotify authorization URL
-    const AUTHORIZE = 'https://accounts.spotify.com/authorize';
-    const url = `${AUTHORIZE}?client_id=${client_id}&response_type=code&redirect_uri=${encodeURIComponent(redirect_uri)}&scope=${encodeURIComponent(scopes)}`;
-    
-    // Redirect the user to Spotify for authorization
-    window.location.href = url;
-  }
+    try {
+      // Start the Spotify authorization flow
+      await this.spotifyService.requestAuthorization();
+      
+      // After successful authorization, handle Spotify login with Firebase
+      await this.firebaseService.handleSpotifyLogin();  
+      
+      // If login is successful, navigate events
+      this.utilsService.routerLink('/tabs/tab1');
+    } catch (error) {
+      console.error('Error during Spotify authentication:', error);
 
-  /*
-  async ngOnInit() {
-    // this.spotifyService.onPageLoad();
-
-    // Se obtiene el access token inicial de Spotify sin que el usuario
-    // tenga que hacer login. Se usa el servicio de SpotifyaccesstokenServiceService
-    // const initAccessToken: any = await this.accessTokenService.getInitToken();
-    // console.log('Init Token: ' + initAccessToken);
-
-    // Se guarda el access token inicial en el local storage
-    // localStorage.setItem('init_access_token', initAccessToken);
-
-    // Se comprueba que el usuario esté ya autenticado
-    // Si el usuario está autenticado, se actualiza el estado a true
-    // y se obtiene el refresh token.
-    const authObjectJson = localStorage.getItem('auth_object');
-    const refreshToken = localStorage.getItem('refresh_token');
-
-    if (authObjectJson) {
-      this.userAuthenticated = true;
+      this.utilsService.presentToast({
+        message: error.message || 'Spotify login failed',
+        duration: 2500,
+        position: 'middle',
+        icon: 'alert-circle-outline'
+      });
     }
-
-    if (refreshToken && refreshToken !== 'undefined') {
-      this.accessTokenService.getRefreshToken();
-    }
-
-    // Suscribirse al evento appUrlOpen y poder manejar los datos
-    // que se reciben de la API.
-    App.addListener('appUrlOpen', (data: any) => {
-      // Obtener la URL del evento
-      const url = data.url;
-
-      // Obtener y manejar los parámetros de la URL que se reciben
-      // de la API con el nombre de authData
-      const params = new URL(url).searchParams;
-      const authData = params.get('authData');
-
-      // Manejar los datos obtenidos guardandolos en el local storage
-      if (authData) {
-        const decodedAuthData = decodeURIComponent(authData);
-        const parsedData = JSON.parse(decodedAuthData);
-        localStorage.setItem('auth_object', parsedData);
-        localStorage.setItem('refresh_token', parsedData.refresh_token);
-        localStorage.setItem('access_token', parsedData.access_token);
-        window.location.reload();
-      }
-    });
   }
-*/
 
   // Función para desconectar al usuario de Spotify
   deleteAuth() {

@@ -23,7 +23,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>http://localhost:8100/</string>
+				<string>tfm_app</string>
 			</array>
 		</dict>
 	</array>
@@ -32,8 +32,6 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>We need your location to show relevant events nearby.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
 	<string>We need your location to show relevant events nearby.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We need your location to show relevant events nearby.</string>

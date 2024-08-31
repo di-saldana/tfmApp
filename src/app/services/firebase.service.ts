@@ -6,6 +6,7 @@ import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, up
 import { User } from '../models/user.model';
 import { UtilsService } from './utils.service';
 import { catchError, map, Observable, throwError } from 'rxjs';
+import { SpotifyService } from '../api/spotify/spotify.service'; 
 
 @Injectable({
   providedIn: 'root'
@@ -20,12 +21,24 @@ export class FirebaseService {
   utilService = inject(UtilsService);
 
   // constructor(private firestore: AngularFirestore) {}
+  constructor(private spotifyService: SpotifyService) { }
+
+  // Autenticacion con Spotify
+  async authenticateWithSpotify(email: string): Promise<void> {
+    const randomPassword = Math.random().toString(36).slice(-8); // Generate a random password
+    await createUserWithEmailAndPassword(getAuth(), email, randomPassword);
+  }
+
+  async handleSpotifyLogin() {
+    const user = await this.spotifyService.getSpotifyUser(); 
+    await this.authenticateWithSpotify(user['email']); // user.email
+  }
 
   getAuth() {
     return getAuth();
   }
 
-  // Autenticacion
+  // Autenticacion normal
   signin(user: User) {
     return signInWithEmailAndPassword(getAuth(), user.email, user.password);
   }

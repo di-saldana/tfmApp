@@ -60,9 +60,9 @@ export class Tab3Page {
   async loadArtistImages() {
     for (let artist of this.favoriteArtists) {
       try {
-        const response = await this.spotifyService.getSpotifyArtist(artist);
-        const artistData = response.artists.items[0];
-        const imageUrl = artistData?.images[0]?.url || 'https://ionicframework.com/docs/img/demos/avatar.svg'; // Default if no image
+        // const response = await this.spotifyService.getSpotifyArtist(artist);
+        // const artistData = response.artists.items[0];
+        const imageUrl = 'https://ionicframework.com/docs/img/demos/avatar.svg'; // Default if no image // artistData?.images[0]?.url || 
         this.artistImages.push(imageUrl);
       } catch (error) {
         console.error('Error fetching artist data: ', error);
