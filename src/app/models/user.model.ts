@@ -9,5 +9,8 @@ export interface User {
     saved_events?: string[],
     invites?: string[], 
     matches?: string[]
-    // fave artists, tracks, albums, genres
+    // favorite_artists?: string[], 
+    // favorite_tracks?: string[],
+    // favorite_albums?: string[], 
+    // favorite_genres?: string[]
 }

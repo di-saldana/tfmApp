@@ -8,6 +8,8 @@ import { ChatPageRoutingModule } from './chat-routing.module';
 
 import { ChatPage } from './chat.page';
 import { SharedModule } from '../shared/shared.module';
+import { UserListComponent } from '../shared/components/user-list/user-list.component';
+import { ChatBoxComponent } from '../shared/components/chat-box/chat-box.component';
 
 @NgModule({
   imports: [
@@ -17,6 +19,6 @@ import { SharedModule } from '../shared/shared.module';
     ChatPageRoutingModule,
     SharedModule
   ],
-  declarations: [ChatPage]
+  declarations: [ChatPage, UserListComponent, ChatBoxComponent]
 })
 export class ChatPageModule {}
