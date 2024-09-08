@@ -19,7 +19,7 @@ export class Tab1Page implements OnInit {
   filteredEvents: any[] = [];
   searchTerm: string = '';  
 
-  constructor(private activatedRoute: ActivatedRoute, private ticketmasterAPIService: TicketmasterService, private firestore: AngularFirestore, private spotifyService: SpotifyService) {}
+  constructor(private activatedRoute: ActivatedRoute, private ticketmasterAPIService: TicketmasterService, private firestore: AngularFirestore, private spotifyService: SpotifyService, private route: ActivatedRoute) {}
 
   firebaseService = inject(FirebaseService);
   utilsService = inject(UtilsService);  

@@ -8,7 +8,7 @@ import { Browser } from '@capacitor/browser';
 export class SpotifyService {
   private client_id = '63e107aee6b549d980b4075dcd9a93f2';
   private client_secret = '6a0b6804cd0448c8ad35fb1da92925e3';
-  private redirect_uri = 'tfm_app'; //'https://tfm-app-dsl.firebaseapp.com/__/auth/handler'; 
+  private redirect_uri = 'http://localhost:4200/auth' // 'http://localhost:4200/tabs/tab1/' //'capacitor://localhost/auth'; //'https://tfm-app-dsl.firebaseapp.com/__/auth/handler'; 
 
   private access_token: string | null = null;
   private refresh_token: string | null = null;
@@ -24,7 +24,15 @@ export class SpotifyService {
     const url = `${this.AUTHORIZE}?client_id=${this.client_id}&response_type=code&redirect_uri=${encodeURIComponent(this.redirect_uri)}&scope=${encodeURIComponent(scopes)}`;
     
     // Open the authorization URL in the Capacitor Browser
-    await Browser.open({ url });
+    // await Browser.open({ url });
+    window.open(url)
+
+    window.addEventListener('message', event => {
+      const hash = JSON.parse(event.data);
+      console.log(hash)
+      if (hash.type == 'access_token') {
+      }
+    }, false);
   }
 
   onPageLoad(): void {
@@ -66,8 +74,8 @@ export class SpotifyService {
   }
 
   private fetchAccessToken(code: string): Promise<void> {
-    const body = `grant_type=authorization_code&code=${code}&redirect_uri=${encodeURIComponent(this.redirect_uri)}&client_id=${this.client_id}&client_secret=${this.client_secret}`;
-    
+    const body = `grant_type=authorization_code&code=${code}&redirect_uri=${encodeURIComponent(this.redirect_uri)}`;
+
     return this.callAuthorizationApi(body);
   }
 
@@ -97,17 +105,17 @@ export class SpotifyService {
 
   // Fetch user profile info
   getSpotifyUser() {
-    this.access_token = localStorage.getItem('access_token');  
-
     if (!this.access_token) {
       console.error("No access token available");
     }
+
+    // this.access_token = 'BQDn2WKyskrugCN5vLzKzh54To9gTEJP8UaoE0GPAj9-R1QviPOCk2RaC5ktyF582cJTT7Is6xYmE7nT6-SJcYnLPRj55P_9rh9-FxrbpCsSMyL-pnxvHAHrsmdTKWFklC4pPVRxKTaNc6QfPELpGrHnZDaXEXhrYmi4yEc2Y8hA9fYJ7X0mE1A5qbQKQAjpQujNrTjeMTundg'
 
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.access_token}`,
       'Content-Type': 'application/json'
     });
 
-    return this.http.get(this.USER_PROFILE, { headers });
+    return this.http.get(this.USER_PROFILE, { headers }).toPromise();
   }
 }
