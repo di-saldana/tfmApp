@@ -54,8 +54,9 @@
   
       <div style="display: flex; margin-top: 15px; gap: 10px;">
         <ion-avatar *ngFor="let artist of favoriteArtists" style="width: 80px; height: 80px;">
-          <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="Artist Avatar"> 
-        
+          <!-- <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="Artist Avatar">  -->
+          <img [src]="artist.image" alt="Artist Avatar">
+
           <ion-popover trigger="hover-trigger" triggerAction="hover">
             <ng-template>
               <ion-content class="ion-padding">{{ artist }}</ion-content>
@@ -87,7 +88,8 @@
   
       <div style="display: flex; margin-top: 15px; gap: 10px;">
         <ion-avatar *ngFor="let album of favoriteAlbums" style="width: 80px; height: 80px;">
-          <img src="https://ionicframework.com/docs/img/demos/card-media.png" alt="Album Avatar">
+          <!-- <img src="https://ionicframework.com/docs/img/demos/card-media.png" alt="Album Avatar"> -->
+          <img [src]="album.image" alt="Album Avatar">
         </ion-avatar>
       </div>
       
@@ -110,7 +112,7 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-card>
+  <!-- <ion-card>
     <ion-card-content>
       <ion-label>
         <h2>Top Music Genres</h2>
@@ -119,9 +121,9 @@
         <ion-label>{{ genre }}</ion-label>
       </ion-chip>
     </ion-card-content>
-  </ion-card>
+  </ion-card>-->
 
   <ion-footer>
     <ion-toolbar style="visibility: hidden;"/>
   </ion-footer>
-</ion-content>
+</ion-content> 

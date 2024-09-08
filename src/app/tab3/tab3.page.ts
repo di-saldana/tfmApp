@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { FirebaseService } from '../services/firebase.service';
 import { UtilsService } from '../services/utils.service';
 import { SpotifyService } from '../api/spotify/spotify.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-tab3',
@@ -13,9 +14,9 @@ export class Tab3Page {
   userName: string = 'Dianelys';
   userAge: number = 25;
   userDistance: number = 0; 
-  favoriteArtists: string[] = ['Lorde', 'Declan McKenna', 'Hozier'];
+  favoriteArtists: any[] = []; 
   favoriteSongs: string[] = ['Unknown / Nth', 'Team', 'The Key to Life on Earth'];
-  favoriteAlbums: string[] = ['Melodrama', 'Unreal Unearth', 'Zeros', 'YHLQMDLG'];
+  favoriteAlbums: any[] = []; 
   favoriteGenres: string[] = ['Indie pop', 'Alternative', 'Latin rock'];
   events: string[] = [];
   artistImages: string[] = []; 
@@ -24,7 +25,8 @@ export class Tab3Page {
 
   constructor(
     private router: Router, 
-    public spotifyService: SpotifyService
+    public spotifyService: SpotifyService,
+    private http: HttpClient
   ) {}
 
   async ngOnInit() {
@@ -34,20 +36,16 @@ export class Tab3Page {
       this.userName = user.name;
       this.userAge = user.age;
       this.loadSavedEvents(user.uid);
+      this.loadTopArtists();
+      this.loadTopAlbums();
     } else {
       console.error('User ID is not available');
       this.router.navigate(['/auth']);
     }
-
-    // this.loadArtistImages();
   }
 
   firebaseService = inject(FirebaseService);
   utilsService = inject(UtilsService);  
-
-  // goToPossibleMatches() {
-  //   this.router.navigate(['/tabs/possible-matches']);
-  // }
 
   goToPossibleMatches(selectedEvent: string) {
     this.router.navigate(['/tabs/possible-matches'], { queryParams: { event: selectedEvent } });
@@ -55,20 +53,6 @@ export class Tab3Page {
   
   signOut() {
     this.firebaseService.signout();
-  }
-
-  async loadArtistImages() {
-    for (let artist of this.favoriteArtists) {
-      try {
-        // const response = await this.spotifyService.getSpotifyArtist(artist);
-        // const artistData = response.artists.items[0];
-        const imageUrl = 'https://ionicframework.com/docs/img/demos/avatar.svg'; // Default if no image // artistData?.images[0]?.url || 
-        this.artistImages.push(imageUrl);
-      } catch (error) {
-        console.error('Error fetching artist data: ', error);
-        this.artistImages.push('https://ionicframework.com/docs/img/demos/avatar.svg'); // Default image if error occurs
-      }
-    }
   }
   
   // Method to load saved events
@@ -82,5 +66,52 @@ export class Tab3Page {
         console.error('Error loading saved events:', error);
       }
     );
+  }
+
+  // Method to retrieve and load top albums
+  async loadTopAlbums() {
+    const apiUrl = 'https://ws.audioscrobbler.com/2.0/';
+    const params = {
+      method: 'user.getTopAlbums',
+      user: 'dianelyssaldana',
+      limit: '4',
+      api_key: '6b949ae3e54e839ec00f53bf82c6a120',
+      format: 'json'
+    };
+
+    try {
+      const response: any = await this.http.get(apiUrl, { params }).toPromise();
+      this.favoriteAlbums = response.topalbums.album.map((album: any) => ({
+        name: album.name,
+        image: album.image.find((img: any) => img.size === 'large')?.['#text'] || 'https://ionicframework.com/docs/img/demos/card-media.png'
+      }));
+    } catch (error) {
+      console.error('Error fetching top albums: ', error);
+    }
+  }
+
+  // Method to retrieve and load top artists
+  async loadTopArtists() {
+    const apiUrl = 'https://ws.audioscrobbler.com/2.0/';
+    const params = {
+      method: 'user.getTopArtists',
+      user: 'dianelyssaldana', // TODO: Replace with dynamic user 
+      limit: '4', // Fetch top artists
+      api_key: '6b949ae3e54e839ec00f53bf82c6a120', 
+      format: 'json'
+    };
+
+    try {
+      // Fetch top artists from the Last.fm API
+      const response: any = await this.http.get(apiUrl, { params }).toPromise();
+
+      // Process the response and map artist data
+      this.favoriteArtists = response.topartists.artist.map((artist: any) => ({
+        name: artist.name,
+        image: artist.image.find((img: any) => img.size === 'extralarge')?.['#text'] || 'https://ionicframework.com/docs/img/demos/card-media.png'
+      }));
+    } catch (error) {
+      console.error('Error fetching top artists:', error);
+    }
   }
 }
