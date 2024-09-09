@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { FirebaseService } from '../services/firebase.service';
 import { UtilsService } from '../services/utils.service';
 import { SpotifyService } from '../api/spotify/spotify.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-tab3',
@@ -10,21 +11,23 @@ import { SpotifyService } from '../api/spotify/spotify.service';
   styleUrls: ['tab3.page.scss']
 })
 export class Tab3Page { 
-  userName: string = 'Dianelys';
+  userName: string = 'Name';
   userAge: number = 25;
   userDistance: number = 0; 
-  favoriteArtists: string[] = ['Lorde', 'Declan McKenna', 'Hozier'];
-  favoriteSongs: string[] = ['Unknown / Nth', 'Team', 'The Key to Life on Earth'];
-  favoriteAlbums: string[] = ['Melodrama', 'Unreal Unearth', 'Zeros', 'YHLQMDLG'];
-  favoriteGenres: string[] = ['Indie pop', 'Alternative', 'Latin rock'];
-  events: string[] = [];
-  artistImages: string[] = []; 
+  favoriteArtists: any[] = [] // ['Lorde', 'Declan McKenna', 'Hozier'];
+  favoriteSongs: any[] = [] // ['Unknown / Nth', 'Team', 'The Key to Life on Earth'];
+  favoriteAlbums: any[] = [] // ['Melodrama', 'Unreal Unearth', 'Zeros', 'YHLQMDLG'];
+  favoriteGenres: any[] = [] // ['Indie pop', 'Alternative', 'Latin rock'];
+  events: any[] = [];
+  artistImages: any[] = []; 
   userId: string = '';  
-  users_interested: string[] = [];
+  users_interested: any[] = [];
+  profileImage: string = 'https://ionicframework.com/docs/img/demos/avatar.svg'; // Default image
 
   constructor(
     private router: Router, 
-    public spotifyService: SpotifyService
+    public spotifyService: SpotifyService,
+    private http: HttpClient
   ) {}
 
   async ngOnInit() {
@@ -33,21 +36,19 @@ export class Tab3Page {
       this.userId = user.uid;
       this.userName = user.name;
       this.userAge = user.age;
+      await this.loadUserProfile();
       this.loadSavedEvents(user.uid);
+      this.loadTopAlbums();
+      await this.loadTopArtists(); 
+      await this.loadTopTracks();
     } else {
       console.error('User ID is not available');
       this.router.navigate(['/auth']);
     }
-
-    // this.loadArtistImages();
   }
 
   firebaseService = inject(FirebaseService);
   utilsService = inject(UtilsService);  
-
-  // goToPossibleMatches() {
-  //   this.router.navigate(['/tabs/possible-matches']);
-  // }
 
   goToPossibleMatches(selectedEvent: string) {
     this.router.navigate(['/tabs/possible-matches'], { queryParams: { event: selectedEvent } });
@@ -70,6 +71,19 @@ export class Tab3Page {
       }
     }
   }
+
+  // Load user profile from Spotify
+  async loadUserProfile() {
+    try {
+      const userProfile = await this.spotifyService.getUserProfile();
+      if (userProfile) {
+        this.profileImage = userProfile.images?.[0]?.url || 'https://ionicframework.com/docs/img/demos/avatar.svg'; // Default image
+        this.userName = userProfile.display_name || this.userName;
+      }
+    } catch (error) {
+      console.error('Error loading user profile:', error);
+    }
+  }
   
   // Method to load saved events
   loadSavedEvents(userId: string) {
@@ -83,4 +97,62 @@ export class Tab3Page {
       }
     );
   }
+
+  // Last.fm
+  async loadTopAlbums() {
+    const apiUrl = 'https://ws.audioscrobbler.com/2.0/';
+    const params = {
+      method: 'user.getTopAlbums',
+      user: 'dianelyssaldana',
+      limit: '4',
+      api_key: '6b949ae3e54e839ec00f53bf82c6a120',
+      format: 'json'
+    };
+
+    try {
+      const response: any = await this.http.get(apiUrl, { params }).toPromise();
+      this.favoriteAlbums = response.topalbums.album.map((album: any) => ({
+        name: album.name,
+        image: album.image.find((img: any) => img.size === 'large')?.['#text'] || 'https://ionicframework.com/docs/img/demos/card-media.png'
+      }));
+    } catch (error) {
+      console.error('Error fetching top albums: ', error);
+    }
+  }
+
+  // Load user's top artists from Spotify
+  async loadTopArtists() {
+    try {
+      const topArtists = await this.spotifyService.getTopArtists(4);
+      if (topArtists) {
+        this.favoriteArtists = topArtists.map((artist: any) => ({
+          name: artist.name,
+          image: artist.images?.[0]?.url || 'https://ionicframework.com/docs/img/demos/avatar.svg', // Default image
+          genres: artist.genres
+        }));
+        console.log('Favorite Artists:', this.favoriteArtists);
+      }
+    } catch (error) {
+      console.error('Error loading top artists:', error);
+    }
+  }
+
+  // Load user's top tracks from Spotify
+  async loadTopTracks() {
+    try {
+      const topTracks = await this.spotifyService.getTopTracks(10); 
+      if (topTracks) {
+        this.favoriteSongs = topTracks.map((track: any) => ({
+          name: track.name,
+          artist: track.artists[0]?.name || 'Unknown Artist',
+          album: track.album.name,
+          image: track.album.images?.[0]?.url || 'https://ionicframework.com/docs/img/demos/card-media.png' // Default image
+        }));
+        console.log('Favorite Tracks:', this.favoriteSongs);
+      }
+    } catch (error) {
+      console.error('Error loading top tracks:', error);
+    }
+  }
+
 }

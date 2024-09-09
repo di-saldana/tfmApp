@@ -21,7 +21,7 @@ export class SpotifyService {
   constructor(private http: HttpClient, private firebase: FirebaseService) {}
 
   async requestAuthorization(): Promise<void> {
-    const scopes = 'user-read-private user-read-email user-modify-playback-state user-library-read streaming user-read-recently-played playlist-read-private';
+    const scopes = 'user-read-private user-read-email user-modify-playback-state user-library-read streaming user-read-recently-played playlist-read-private user-top-read';
     const url = `${this.AUTHORIZE}?client_id=${this.client_id}&response_type=code&redirect_uri=${encodeURIComponent(this.redirect_uri)}&scope=${encodeURIComponent(scopes)}`;
     
     window.open(url)
@@ -135,6 +135,80 @@ export class SpotifyService {
     } else {
       // Create a new user account
       this.firebase.authenticateWithSpotify(email)
+    }
+  }
+
+  // Data Requests
+  // Method to get user profile
+  async getUserProfile(): Promise<any> {
+    const url = this.USER_PROFILE; // Spotify API endpoint for user profile
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+      console.error('Access token not found');
+      return null;
+    }
+
+    try {
+      const response = await this.http.get(url, {
+        headers: {
+          Authorization: 'Bearer ' + accessToken
+        }
+      }).toPromise();
+      console.log('User Profile Response:', response); // Log the response
+      return response;
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      return null;
+    }
+  }
+
+  // Retrieves user's top artists
+  async getTopArtists(limit: number = 4): Promise<any> {
+    this.access_token = localStorage.getItem('access_token');
+    if (!this.access_token) {
+      console.error('Access token not found');
+      return null;
+    }
+
+    try {
+      const response = await fetch(`https://api.spotify.com/v1/me/top/artists?limit=${limit}`, {
+        headers: {
+          Authorization: 'Bearer ' + this.access_token
+        }
+      });
+
+      const data = await response.json();
+      console.log('Top Artists:', data.items); // Log top artists
+
+      return data.items;  // Return top artists
+    } catch (error) {
+      console.error('Error fetching top artists: ', error);
+      return null;
+    }
+  }
+
+  // Retrieves user's top tracks
+  async getTopTracks(limit: number = 10): Promise<any> {
+    this.access_token = localStorage.getItem('access_token');
+    if (!this.access_token) {
+      console.error('Access token not found');
+      return null;
+    }
+
+    try {
+      const response = await fetch(`https://api.spotify.com/v1/me/top/tracks?limit=${limit}`, { 
+        headers: {
+          Authorization: 'Bearer ' + this.access_token
+        }
+      });
+
+      const data = await response.json();
+      console.log('Top Tracks:', data.items); // Log top tracks
+
+      return data.items;  // Return top tracks
+    } catch (error) {
+      console.error('Error fetching top tracks: ', error);
+      return null;
     }
   }
 
