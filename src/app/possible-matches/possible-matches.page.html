@@ -27,39 +27,13 @@
   </ion-header>
 
   <ion-card *ngFor="let profile of profiles">
-    <ion-card-content>
-      <div style="display: flex; align-items: center;">
-        
-        <!-- TODO: Redirect to correct profile -->
-        <ion-avatar slot="start" (click)="goToProfile(profile)">
-          <img alt="Profile Image" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-        </ion-avatar>
-
-        <div style="margin-left: 15px;">
-          <ion-card-title>{{ profile.name }}, {{profile.age}}</ion-card-title>
-          <h2 style="margin: 0; color: gray;">{{ profile.location }}</h2>
-        </div>
-      </div>
-
-      <!-- <div style="margin-top: 10px;"> 
-        <ion-chip style="margin-top: 15px;" *ngFor="let event of profile.events">
-          <ion-avatar>
-            <img alt="Artist Image" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-          </ion-avatar>
-          <ion-label>{{ event }}</ion-label>
-        </ion-chip>
-      </div> -->
-
-      <!-- <div style="display: flex; margin-top: 15px; gap: 10px;">
-        <ion-avatar *ngFor="let artist of profile.artists" style="width: 80px; height: 80px;">
-          <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="Artist Avatar"> 
-        </ion-avatar>
-      </div> -->
-
+    <ion-img alt="Profile Image" src="https://ionicframework.com/docs/img/demos/avatar.svg"></ion-img> 
+    <ion-card-header>
+      <ion-card-title class="center-text">{{ profile.name }}, {{profile.age}}</ion-card-title>
       <ion-icon name="add" 
-                style="position: absolute; top: 25px; right: 25px; font-size: 30px; color: var(--ion-color-primary);">
+                style="position: absolute; top: 15px; right: 25px; font-size: 30px; color: var(--ion-color-primary);">
       </ion-icon>
-    </ion-card-content>
+    </ion-card-header>
   </ion-card>
 
   <ion-footer>

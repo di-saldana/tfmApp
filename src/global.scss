@@ -162,5 +162,9 @@ app-logo {
 ion-card {
     border-radius: 20px;
     overflow: hidden; /* Ensures content respects the border radius */
+    margin-bottom: 20px;
 }
-  
+
+ion-searchbar {
+    border-radius: 15px;
+}
