@@ -27,6 +27,7 @@ export class FirebaseService {
   }
 
   signout() {
+    localStorage.setItem('isAuthenticated', 'false');
     getAuth().signOut();
     localStorage.removeItem('user');
     sessionStorage.removeItem('user'); 
@@ -129,27 +130,158 @@ export class FirebaseService {
   }
 
   // Autenticacion con Spotify
-  // TODO: Modify to add: email, name, spotify id, random password when creating new user
+  async signinWithSpotify(email: string) {
+    // TODO: Check si hay un spotify_id relacionado, sino, link accounts
+    // await this.updateUserSpotifyInfo(uid, email, spotifyId, name, image);
+
+    return signInWithEmailAndPassword(getAuth(), email, '123456'); // randomPassword); // Hardcoded just for troubleshooting
+  }
+
+  async checkIfEmailExists(email: string): Promise<boolean> {
+    const userRef = this.firestore.collection('users');
+    const querySnapshot = await userRef.ref.where('email', '==', email).get();
+  
+    // If any documents are returned, the email exists
+    return !querySnapshot.empty;
+  }
+
   async authenticateWithSpotify(email: string): Promise<void> {
-    const randomPassword = Math.random().toString(36).slice(-8); // Generate a random password
-    await createUserWithEmailAndPassword(getAuth(), email, randomPassword);
+    try {
+      console.log("Starting Spotify authentication for email: ", email);
+  
+      // Step 1: Retrieve Spotify user profile
+      // TODO: CHECK
+      // const user = await this.spotify.getProfile();
+      // if (!user) {
+      //   throw new Error('Failed to retrieve Spotify profile');
+      // }
+      // console.log("Spotify profile retrieved:", user);
+  
+      // Step 2: Extract user details from Spotify profile
+      // const spotifyId = (await user).spotifyID
+      // const name = (await user).displayName
+      // const image = (await user).profileImage
+      const spotifyId = "22oaxkt4bvq5mflg34r75qc6i";
+      const name = "Dianelys Saldaña"; 
+      const image = "https://i.scdn.co/image/ab67757000003b82a4beffa6b43be7021b699691"; 
+  
+      /*
+      "displayName":"Dianelys Saldaña",
+      "email":"dianelyssaldana5@gmail.com",
+      "spotifyID":"22oaxkt4bvq5mflg34r75qc6i",
+      "country":"ES",
+      "profileImage":"https://i.scdn.co/image/ab67757000003b82a4beffa6b43be7021b699691",
+      "followersCount":15
+      */
+  
+      // Step 3: Generate a random password for Firebase authentication
+      const randomPassword = Math.random().toString(36).slice(-8);
+      // console.log("Random password generated for Firebase:", randomPassword);
+  
+      // Step 4: Create Firebase user with email and generated random password
+      const authResult = await createUserWithEmailAndPassword(getAuth(), email, '123456'); // randomPassword); // Hardcoded just for troubleshooting
+      localStorage.setItem('isAuthenticated', 'true');
+
+      // Step 5: Get UID of newly created user
+      const uid = authResult.user.uid; 
+      if (!uid) {
+        throw new Error('Failed to retrieve user ID from Firebase');
+      }
+      console.log("Firebase user ID retrieved:", uid);
+
+      // Step 6: Update user information in Firebase with Spotify data
+      await this.setUserInfo(uid, email, name, spotifyId, image);
+      await this.updateUserSpotifyInfo(uid, email, spotifyId, name, image);
+      console.log("Firebase user information updated with Spotify data");
+  
+    } catch (error) {
+      console.error('Error authenticating with Spotify:', error.message, error);
+      throw error; 
+    }
+  }  
+
+  async updateUserSpotifyInfo(uid: string, email: string, spotifyId: string, name: string, image: string, age?: string): Promise<void> {
+    const path = `users/${uid}`;
+  
+    const updatedData = {
+      uid: uid || '',
+      spotify_id: spotifyId || '',
+      name: name || '',
+      email: email || '',
+      profile_picture: image || '',
+      saved_events: [] = [],
+      invites: [] = [],
+      matches: [] = [],
+      age: age || '',
+    };
+  
+    try {
+      await this.setDocument(path, updatedData);
+      console.log('User profile updated with Spotify info:', updatedData);
+    } catch (error) {
+      console.error('Error updating user profile:', error);
+      throw error;
+    }
   }
 
-  async handleSpotifyLogin() {
-    console.log("Handle Spotify Login Flow")
-    /*
-    TODO: Flow for when a user authenticates with Spotify:
-
-      - Retrieve email from profile info with spotify.getProfile() method
-      - Check if email is registered already:
-        - If it is registered:
-          - Retrieve Spotify ID from profile
-          - updateUser() with the spotify id
-          - navigate home ('tabs/tab1')
-        - If user is not registered
-          - authenticateWithSpotify()
-          - navigate home ('tabs/tab1')
-    */
+  async setUserInfo(uid: string, email: string, name: string, spotifyId: string, image: string, age?: string): Promise<void> {
+    const userInfo = {
+      uid: uid || '',
+      spotify_id: spotifyId || '',
+      name: name || '',
+      email: email || '',
+      profile_picture: image || '',
+      saved_events: [] = [],
+      invites: [] = [],
+      matches: [] = [],
+      age: age || '',
+    };
+  
+    const path = `users/${uid}`;
+  
+    try {
+      // Set the document in Firestore
+      await this.setDocument(path, userInfo);
+  
+      // Save to local storage and navigate
+      this.utilService.saveInLocalStorage('user', userInfo);
+      this.utilService.routerLink('/tabs/tab1');
+    } catch (error) {
+      console.error('Error setting user info:', error);
+  
+      // Show error toast
+      this.utilService.presentToast({
+        message: error.message,
+        duration: 2500,
+        position: 'middle',
+        icon: 'alert-circle-outline'
+      });
+    } 
   }
- 
+
+  // Method to retrieve user ID given an email
+  async getUserIdByEmail(email: string): Promise<string> {
+    const db = getFirestore();
+    const usersRef = collection(db, 'users');
+    
+    // Query to find the document with the matching email
+    const q = query(usersRef, where('email', '==', email));
+    
+    try {
+      const querySnapshot = await getDocs(q);
+      
+      // Check if any documents are returned
+      if (querySnapshot.empty) {
+        return ''; // No user found with the given email
+      }
+
+      // Assuming there is only one document with the given email
+      const userDoc = querySnapshot.docs[0];
+      return userDoc.id; // Return the user ID
+    } catch (error) {
+      console.error('Error fetching user ID by email:', error);
+      return ''; // Return an empty string in case of an error
+    }
+  }
+
 }

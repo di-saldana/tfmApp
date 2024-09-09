@@ -27,8 +27,8 @@ export class AppComponent {
             await this.spotify.exchangeCodeForToken(code);
   
             // Use the access token to get Spotify user
-            this.spotify.getProfile()
-            this.firebase.handleSpotifyLogin()
+            // this.spotify.getProfile()
+            // this.firebase.handleSpotifyLogin()
 
           } catch (error) {
             console.error('Error during Spotify OAuth process: ', error);

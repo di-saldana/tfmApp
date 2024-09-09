@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { SpotifyUser } from 'src/app/models/user.model';
+import { FirebaseService } from 'src/app/services/firebase.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class SpotifyService {
   private readonly TOKEN = 'https://accounts.spotify.com/api/token';
   private readonly USER_PROFILE = 'https://api.spotify.com/v1/me';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private firebase: FirebaseService) {}
 
   async requestAuthorization(): Promise<void> {
     const scopes = 'user-read-private user-read-email user-modify-playback-state user-library-read streaming user-read-recently-played playlist-read-private';
@@ -60,6 +61,9 @@ export class SpotifyService {
       localStorage.setItem('refresh_token', response['refresh_token']);
       this.refresh_token = localStorage.getItem('refresh_token');
       console.log('Local Refresh Token:', this.refresh_token);
+
+      // Once the access token is retrieved, handle rest of the flow
+      this.handleSpotifyLogin()
 
       return response;  
     } catch (error) {
@@ -104,5 +108,34 @@ export class SpotifyService {
       return null;
     }
   }  
+
+  async handleSpotifyLogin() {
+    console.log("Handle Spotify Login Flow")
+    /*
+    TODO: Flow for when a user authenticates with Spotify:
+
+      - Retrieve email from profile info with spotify.getProfile() method
+      - Check if email is registered already:
+        - If it is registered:
+          - Retrieve Spotify ID from profile
+          - updateUser() with the spotify id
+          - navigate home ('tabs/tab1')
+        - If user is not registered
+          - authenticateWithSpotify()
+          - navigate home ('tabs/tab1')
+    */
+    const email = (await this.getProfile()).email
+    const emailExists = await this.firebase.checkIfEmailExists(email);
+    console.log("Email exists: ", emailExists, email)
+
+    if(emailExists) {
+      // TODO: NOT WORKING
+      // this.firebase.signinWithSpotify(email);
+      localStorage.setItem('isAuthenticated', 'true');
+    } else {
+      // Create a new user account
+      this.firebase.authenticateWithSpotify(email)
+    }
+  }
 
 }
