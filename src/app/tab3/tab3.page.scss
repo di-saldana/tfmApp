@@ -1,10 +1,17 @@
 /* In tab3.page.scss or global stylesheet */
 .profile-image {
-    width: 150px; /* Adjust the width as needed */
-    height: 150px; /* Adjust the height as needed */
-    border-radius: 80%; /* Make it a circle if desired */
-    object-fit: cover; /* Ensure the image covers the area */
-    margin: auto; /* Center the image if needed */
-    display: block; /* Ensure the image is a block element */
-  }
-  
+    width: 100px;
+    height: 100px;
+    border-radius: 80%; 
+    object-fit: cover; 
+    margin: auto;
+    display: block; 
+}
+
+.center-text {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+

@@ -77,7 +77,7 @@ export class Tab3Page {
     try {
       const userProfile = await this.spotifyService.getUserProfile();
       if (userProfile) {
-        this.profileImage = userProfile.images?.[0]?.url || 'https://ionicframework.com/docs/img/demos/avatar.svg'; // Default image
+        this.profileImage = userProfile.images?.[1]?.url || 'https://ionicframework.com/docs/img/demos/avatar.svg'; // Default image
         this.userName = userProfile.display_name || this.userName;
       }
     } catch (error) {

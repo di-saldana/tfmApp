@@ -158,3 +158,9 @@ ion-item.custom-input {
 app-logo {
     margin-bottom: 20px;
 }
+
+ion-card {
+    border-radius: 20px;
+    overflow: hidden; /* Ensures content respects the border radius */
+}
+  
