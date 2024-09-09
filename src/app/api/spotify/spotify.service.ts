@@ -17,8 +17,11 @@ export class SpotifyService {
   private readonly AUTHORIZE = 'https://accounts.spotify.com/authorize';
   private readonly TOKEN = 'https://accounts.spotify.com/api/token';
   private readonly USER_PROFILE = 'https://api.spotify.com/v1/me';
+  private readonly REFRESH_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
 
-  constructor(private http: HttpClient, private firebase: FirebaseService) {}
+  constructor(private http: HttpClient, private firebase: FirebaseService) {
+    this.setupTokenRefresh();
+  }
 
   async requestAuthorization(): Promise<void> {
     const scopes = 'user-read-private user-read-email user-modify-playback-state user-library-read streaming user-read-recently-played playlist-read-private user-top-read';
@@ -65,6 +68,13 @@ export class SpotifyService {
       // Once the access token is retrieved, handle rest of the flow
       this.handleSpotifyLogin()
 
+      const expiresIn = response['expires_in'];
+      const expirationTime = new Date().getTime() + (expiresIn * 1000); // Convert to milliseconds
+      localStorage.setItem('token_expiration', expirationTime.toString());
+
+      this.refresh_token = response['refresh_token'];
+      localStorage.setItem('refresh_token', this.refresh_token);
+
       return response;  
     } catch (error) {
       console.error('Error getting access token: ', error);
@@ -72,8 +82,136 @@ export class SpotifyService {
     }
   }
 
+  // Refresh token logic
+  async refreshAccessToken(): Promise<void> {
+    const base64Credentials = btoa(`${this.client_id}:${this.client_secret}`);
+  
+    const body = new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token: this.refresh_token || ''
+    });
+  
+    try {
+      const response = await this.http.post(this.TOKEN, body.toString(), {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Basic ${base64Credentials}`
+        })
+      }).toPromise();
+  
+      this.access_token = response['access_token'];
+      localStorage.setItem('access_token', this.access_token);
+      console.log('Access Token Refreshed:', this.access_token);
+    } catch (error) {
+      console.error('Error refreshing access token: ', error);
+    }
+  }  
+
+  async getRefreshToken(): Promise<void> {
+    const refreshToken = localStorage.getItem('refresh_token');
+    const url = this.TOKEN; 
+  
+    if (!refreshToken) {
+      console.error('Refresh token not found');
+      return;
+    }
+  
+    const payload = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${btoa(`${this.client_id}:${this.client_secret}`)}`, // Spotify requires basic auth with client_id:client_secret
+      },
+      body: new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+      }),
+    };
+  
+    try {
+      const response = await fetch(url, payload);
+      const data = await response.json();
+  
+      if (data.access_token) {
+        localStorage.setItem('access_token', data.access_token);
+        console.log('New access token:', data.access_token);
+  
+        // Optionally, check if Spotify provides a new refresh token and store it
+        if (data.refresh_token) {
+          localStorage.setItem('refresh_token', data.refresh_token);
+          console.log('New refresh token:', data.refresh_token);
+        }
+  
+        // Update the token expiration time (assume expires_in is provided in seconds)
+        const expirationTime = new Date().getTime() + (data.expires_in * 1000);
+        localStorage.setItem('token_expiration', expirationTime.toString());
+      } else {
+        console.error('Error fetching refresh token: ', data);
+      }
+    } catch (error) {
+      console.error('Error refreshing access token:', error);
+    }
+  }  
+
+  private setupTokenRefresh(): void {
+    setInterval(() => {
+      this.refreshAccessToken().catch(error => console.error('Token refresh failed', error));
+    }, this.REFRESH_INTERVAL_MS);
+  }
+
+  private async ensureTokenValid(): Promise<void> {
+    if (this.isTokenExpired()) {
+      console.log('Token expired, refreshing...');
+      await this.getRefreshToken();
+    } else {
+      console.log('Token is still valid.');
+    }
+  }
+  
+
+  private isTokenExpired(): boolean {
+    const expirationTime = localStorage.getItem('token_expiration');
+    if (!expirationTime) {
+      return true; // If expiration time is not found, consider the token as expired
+    }
+  
+    const currentTime = new Date().getTime();
+    return currentTime > parseInt(expirationTime, 10);
+  }  
+
+  async handleSpotifyLogin() {
+    console.log("Handle Spotify Login Flow")
+    /*
+    TODO: Flow for when a user authenticates with Spotify:
+
+      - Retrieve email from profile info with spotify.getProfile() method
+      - Check if email is registered already:
+        - If it is registered:
+          - Retrieve Spotify ID from profile
+          - updateUser() with the spotify id
+          - navigate home ('tabs/tab1')
+        - If user is not registered
+          - authenticateWithSpotify()
+          - navigate home ('tabs/tab1')
+    */
+    const email = (await this.getProfile()).email
+    const emailExists = await this.firebase.checkIfEmailExists(email);
+    console.log("Email exists: ", emailExists, email)
+
+    if(emailExists) {
+      // TODO: NOT WORKING
+      // this.firebase.signinWithSpotify(email);
+      localStorage.setItem('isAuthenticated', 'true');
+    } else {
+      // Create a new user account
+      this.firebase.authenticateWithSpotify(email)
+    }
+  }
+
   // Shows profile info
   async getProfile(): Promise<SpotifyUser | null> {
+    await this.ensureTokenValid(); 
+
     this.access_token = localStorage.getItem('access_token');
     if (!this.access_token) {
       console.error('Access token not found');
@@ -109,40 +247,13 @@ export class SpotifyService {
     }
   }  
 
-  async handleSpotifyLogin() {
-    console.log("Handle Spotify Login Flow")
-    /*
-    TODO: Flow for when a user authenticates with Spotify:
-
-      - Retrieve email from profile info with spotify.getProfile() method
-      - Check if email is registered already:
-        - If it is registered:
-          - Retrieve Spotify ID from profile
-          - updateUser() with the spotify id
-          - navigate home ('tabs/tab1')
-        - If user is not registered
-          - authenticateWithSpotify()
-          - navigate home ('tabs/tab1')
-    */
-    const email = (await this.getProfile()).email
-    const emailExists = await this.firebase.checkIfEmailExists(email);
-    console.log("Email exists: ", emailExists, email)
-
-    if(emailExists) {
-      // TODO: NOT WORKING
-      // this.firebase.signinWithSpotify(email);
-      localStorage.setItem('isAuthenticated', 'true');
-    } else {
-      // Create a new user account
-      this.firebase.authenticateWithSpotify(email)
-    }
-  }
-
   // Data Requests
   // Method to get user profile
   async getUserProfile(): Promise<any> {
     const url = this.USER_PROFILE; // Spotify API endpoint for user profile
     const accessToken = localStorage.getItem('access_token');
+    await this.ensureTokenValid(); 
+
     if (!accessToken) {
       console.error('Access token not found');
       return null;
@@ -165,6 +276,8 @@ export class SpotifyService {
   // Retrieves user's top artists
   async getTopArtists(limit: number = 4): Promise<any> {
     this.access_token = localStorage.getItem('access_token');
+    await this.ensureTokenValid(); 
+
     if (!this.access_token) {
       console.error('Access token not found');
       return null;
@@ -190,6 +303,8 @@ export class SpotifyService {
   // Retrieves user's top tracks
   async getTopTracks(limit: number = 10): Promise<any> {
     this.access_token = localStorage.getItem('access_token');
+    await this.ensureTokenValid(); 
+
     if (!this.access_token) {
       console.error('Access token not found');
       return null;
