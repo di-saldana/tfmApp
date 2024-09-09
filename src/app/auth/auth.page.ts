@@ -26,11 +26,11 @@ export class AuthPage implements OnInit {
   utilsService = inject(UtilsService);
 
   ngOnInit() {
-    this.route.queryParams.subscribe(async (params) => {
-      console.log(params);
-      await this.spotifyService.onPageLoad();
-      await this.firebaseService.handleSpotifyLogin(); 
-    });
+    // TODO: DELETE
+    // this.route.queryParams.subscribe(async (params) => {
+    //   console.log(params);
+    //   await this.spotifyService.onPageLoad();
+    // });
   }
 
   async submit() {
@@ -90,11 +90,11 @@ export class AuthPage implements OnInit {
       // Start the Spotify authorization flow
       await this.spotifyService.requestAuthorization();
       
+      // TODO:
       // After successful authorization, handle Spotify login with Firebase
-      await this.firebaseService.handleSpotifyLogin();  
       
       // If login is successful, navigate events
-      this.utilsService.routerLink('/tabs/tab1');
+      // this.utilsService.routerLink('/tabs/tab1');
     } catch (error) {
       console.error('Error during Spotify authentication:', error);
 

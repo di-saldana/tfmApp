@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { getFirestore, setDoc, doc, getDoc, updateDoc, arrayUnion, collection, getDocs, query, where } from '@angular/fire/firestore'
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, sendPasswordResetEmail } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, sendPasswordResetEmail, fetchSignInMethodsForEmail } from 'firebase/auth';
 import { User } from '../models/user.model';
 import { UtilsService } from './utils.service';
 import { catchError, map, Observable, throwError } from 'rxjs';
@@ -12,33 +12,16 @@ import { SpotifyService } from '../api/spotify/spotify.service';
   providedIn: 'root'
 })
 export class FirebaseService {
-  getUserEvents(userId: string) {
-    throw new Error('Method not implemented.');
-  }
-
   auth = inject(AngularFireAuth);
   firestore = inject(AngularFirestore);
+  spotify = inject(SpotifyService);
   utilService = inject(UtilsService);
-
-  // constructor(private firestore: AngularFirestore) {}
-  constructor(private spotifyService: SpotifyService) { }
-
-  // Autenticacion con Spotify
-  async authenticateWithSpotify(email: string): Promise<void> {
-    const randomPassword = Math.random().toString(36).slice(-8); // Generate a random password
-    await createUserWithEmailAndPassword(getAuth(), email, randomPassword);
-  }
-
-  async handleSpotifyLogin() {
-    const user = await this.spotifyService.getSpotifyUser(); 
-    await this.authenticateWithSpotify(user['email']); // user.email
-  }
 
   getAuth() {
     return getAuth();
   }
 
-  // Autenticacion normal
+  // Autenticacion normal con Firebase
   signin(user: User) {
     return signInWithEmailAndPassword(getAuth(), user.email, user.password);
   }
@@ -62,7 +45,7 @@ export class FirebaseService {
     return sendPasswordResetEmail(getAuth(), email);
   }
 
-  // Base de Datos
+  // Base de Datos Firestore
   setDocument(path: string, data: any) {
     return setDoc(doc(getFirestore(), path), data);
   }
@@ -82,19 +65,6 @@ export class FirebaseService {
 
     return updateDoc(userDocRef, {
       saved_events: arrayUnion(eventId)
-    });
-  }
-
-  // Invites
-  addInviteToUser(userIdA: string, userIdB: string, eventId: string) {
-    if (!userIdA) {
-      throw new Error('User ID is missing');
-    }
-    
-    const userDocRef = doc(getFirestore(), `users/${userIdA}`);
-
-    return updateDoc(userDocRef, {
-      invites: arrayUnion(userIdB)
     });
   }
 
@@ -145,4 +115,41 @@ export class FirebaseService {
     return interestedUsers;
   }
 
+  // Invites
+  addInviteToUser(userIdA: string, userIdB: string, eventId: string) {
+    if (!userIdA) {
+      throw new Error('User ID is missing');
+    }
+    
+    const userDocRef = doc(getFirestore(), `users/${userIdA}`);
+
+    return updateDoc(userDocRef, {
+      invites: arrayUnion(userIdB)
+    });
+  }
+
+  // Autenticacion con Spotify
+  // TODO: Modify to add: email, name, spotify id, random password when creating new user
+  async authenticateWithSpotify(email: string): Promise<void> {
+    const randomPassword = Math.random().toString(36).slice(-8); // Generate a random password
+    await createUserWithEmailAndPassword(getAuth(), email, randomPassword);
+  }
+
+  async handleSpotifyLogin() {
+    console.log("Handle Spotify Login Flow")
+    /*
+    TODO: Flow for when a user authenticates with Spotify:
+
+      - Retrieve email from profile info with spotify.getProfile() method
+      - Check if email is registered already:
+        - If it is registered:
+          - Retrieve Spotify ID from profile
+          - updateUser() with the spotify id
+          - navigate home ('tabs/tab1')
+        - If user is not registered
+          - authenticateWithSpotify()
+          - navigate home ('tabs/tab1')
+    */
+  }
+ 
 }

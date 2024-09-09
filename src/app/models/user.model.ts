@@ -11,3 +11,13 @@ export interface User {
     matches?: string[]
     // fave artists, tracks, albums, genres
 }
+
+export interface SpotifyUser {
+    displayName: string;
+    email: string;
+    spotifyID: string;
+    country: string;
+    profileImage?: string;
+    followersCount: number;
+}
+  

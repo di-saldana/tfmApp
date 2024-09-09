@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Browser } from '@capacitor/browser';
+import { SpotifyUser } from 'src/app/models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +8,7 @@ import { Browser } from '@capacitor/browser';
 export class SpotifyService {
   private client_id = '63e107aee6b549d980b4075dcd9a93f2';
   private client_secret = '6a0b6804cd0448c8ad35fb1da92925e3';
-  private redirect_uri = 'http://localhost:4200/auth' // 'http://localhost:4200/tabs/tab1/' //'capacitor://localhost/auth'; //'https://tfm-app-dsl.firebaseapp.com/__/auth/handler'; 
+  private redirect_uri = 'capacitor://localhost/auth' // 'http://localhost:8100/auth' // 'http://localhost:8100/tabs/tab1/' 
 
   private access_token: string | null = null;
   private refresh_token: string | null = null;
@@ -23,8 +23,6 @@ export class SpotifyService {
     const scopes = 'user-read-private user-read-email user-modify-playback-state user-library-read streaming user-read-recently-played playlist-read-private';
     const url = `${this.AUTHORIZE}?client_id=${this.client_id}&response_type=code&redirect_uri=${encodeURIComponent(this.redirect_uri)}&scope=${encodeURIComponent(scopes)}`;
     
-    // Open the authorization URL in the Capacitor Browser
-    // await Browser.open({ url });
     window.open(url)
 
     window.addEventListener('message', event => {
@@ -35,87 +33,76 @@ export class SpotifyService {
     }, false);
   }
 
-  onPageLoad(): void {
-    this.client_id = this.client_id; // localStorage.getItem('client_id') || '';
-    this.client_secret = this.client_secret; // localStorage.getItem('client_secret') || '';
-    const queryString = window.location.search;
-    if (queryString.length > 0) {
-      this.handleRedirect(this.redirect_uri);
-    } else {
+  // Method to exchange authorization code for access token
+  async exchangeCodeForToken(code: string): Promise<any> {
+    const base64Credentials = btoa(`${this.client_id}:${this.client_secret}`);
+
+    const body = new URLSearchParams({
+      grant_type: 'authorization_code',
+      code: code,
+      redirect_uri: this.redirect_uri,
+      // client_id: this.client_id,
+      // client_secret: this.client_secret,
+    });
+
+    try {
+      const response = await this.http.post(this.TOKEN, body.toString(), {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Basic ${base64Credentials}`  
+        }),
+      }).toPromise();
+
+      localStorage.setItem('access_token', response['access_token']);
       this.access_token = localStorage.getItem('access_token');
-      if (this.access_token === null) {
-        document.getElementById('tokenSection'); 
-      } else {
-        document.getElementById('deviceSection');
-      }
+      console.log('Local Access Token:', this.access_token);
+
+      localStorage.setItem('refresh_token', response['refresh_token']);
+      this.refresh_token = localStorage.getItem('refresh_token');
+      console.log('Local Refresh Token:', this.refresh_token);
+
+      return response;  
+    } catch (error) {
+      console.error('Error getting access token: ', error);
+      throw error;
     }
   }
 
-  async handleRedirect(url: string): Promise<void> {
-    // Check if the URL contains the authorization code
-    if (url.startsWith(this.redirect_uri)) {
-      // const code = new URL(url).searchParams.get('code');
-      const code = this.getCode();
-      if (code) {
-        console.log(code)
-        // Exchange the authorization code for access and refresh tokens
-        await this.fetchAccessToken(code);
-      }
-    }
-  }
-
-  private getCode(): string | null {
-    const queryString = window.location.search;
-    if (queryString.length > 0) {
-      const urlParams = new URLSearchParams(queryString);
-      return urlParams.get('code');
-    }
-    return null;
-  }
-
-  private fetchAccessToken(code: string): Promise<void> {
-    const body = `grant_type=authorization_code&code=${code}&redirect_uri=${encodeURIComponent(this.redirect_uri)}`;
-
-    return this.callAuthorizationApi(body);
-  }
-
-  private callAuthorizationApi(body: string): Promise<void> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: 'Basic ' + btoa(`${this.client_id}:${this.client_secret}`)
-    });
-
-    return new Promise((resolve, reject) => {
-      this.http.post(this.TOKEN, body, { headers }).subscribe({
-        next: (response: any) => {
-          this.handleAuthorizationResponse(response);
-          resolve();
-        },
-        error: (err) => reject(err)
-      });
-    });
-  }
-
-  private handleAuthorizationResponse(response: any): void {
-    if (response.access_token) {
-      this.access_token = response.access_token;
-      localStorage.setItem('access_token', response.access_token);
-    }
-  }
-
-  // Fetch user profile info
-  getSpotifyUser() {
+  // Shows profile info
+  async getProfile(): Promise<SpotifyUser | null> {
+    this.access_token = localStorage.getItem('access_token');
     if (!this.access_token) {
-      console.error("No access token available");
+      console.error('Access token not found');
+      return null;
     }
+  
+    try {
+      const response = await fetch(this.USER_PROFILE, {
+        headers: {
+          Authorization: 'Bearer ' + this.access_token
+        }
+      });
+  
+      const data = await response.json();
+      
+      // Extract specific fields
+      const userProfile: SpotifyUser = {
+        displayName: data.display_name,
+        email: data.email,
+        spotifyID: data.id,
+        country: data.country,
+        profileImage: data.images?.[0]?.url || null, // Handle optional image
+        followersCount: data.followers?.total || 0
+      };
+    
+      // Log extracted data
+      console.log('User Profile:', userProfile);
+    
+      return userProfile;  // Return user profile data
+    } catch (error) {
+      console.error('Error fetching profile data: ', error);
+      return null;
+    }
+  }  
 
-    // this.access_token = 'BQDn2WKyskrugCN5vLzKzh54To9gTEJP8UaoE0GPAj9-R1QviPOCk2RaC5ktyF582cJTT7Is6xYmE7nT6-SJcYnLPRj55P_9rh9-FxrbpCsSMyL-pnxvHAHrsmdTKWFklC4pPVRxKTaNc6QfPELpGrHnZDaXEXhrYmi4yEc2Y8hA9fYJ7X0mE1A5qbQKQAjpQujNrTjeMTundg'
-
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${this.access_token}`,
-      'Content-Type': 'application/json'
-    });
-
-    return this.http.get(this.USER_PROFILE, { headers }).toPromise();
-  }
 }
