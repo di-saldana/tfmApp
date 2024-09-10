@@ -4,6 +4,7 @@ import { FirebaseService } from '../services/firebase.service';
 import { User } from '../models/user.model';
 import { UtilsService } from '../services/utils.service';
 import { SpotifyService } from '../api/spotify/spotify.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-auth',
@@ -14,7 +15,7 @@ export class AuthPage implements OnInit {
 
   userAuthenticated: boolean = false;
 
-  constructor(private spotifyService: SpotifyService) { }
+  constructor(private spotifyService: SpotifyService, private route: ActivatedRoute) { }
 
   form = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]), 
@@ -25,7 +26,11 @@ export class AuthPage implements OnInit {
   utilsService = inject(UtilsService);
 
   ngOnInit() {
-    this.spotifyService.onPageLoad();
+    // TODO: DELETE
+    // this.route.queryParams.subscribe(async (params) => {
+    //   console.log(params);
+    //   await this.spotifyService.onPageLoad();
+    // });
   }
 
   async submit() {
@@ -85,11 +90,11 @@ export class AuthPage implements OnInit {
       // Start the Spotify authorization flow
       await this.spotifyService.requestAuthorization();
       
+      // TODO:
       // After successful authorization, handle Spotify login with Firebase
-      await this.firebaseService.handleSpotifyLogin();  
       
       // If login is successful, navigate events
-      this.utilsService.routerLink('/tabs/tab1');
+      // this.utilsService.routerLink('/tabs/tab1');
     } catch (error) {
       console.error('Error during Spotify authentication:', error);
 

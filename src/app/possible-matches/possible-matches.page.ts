@@ -34,6 +34,7 @@ export class PossibleMatchesPage implements OnInit {
   userName: string = '';
   event_name: string = '';
   profiles: any[] = [];
+  events: any[] = [];
 
   constructor(private router: Router, private route: ActivatedRoute) {}
 
@@ -47,6 +48,7 @@ export class PossibleMatchesPage implements OnInit {
       this.route.queryParams.subscribe(params => {
         this.event_name = params['event'];
         this.loadUsersInterestedInEvent(this.event_name);
+        this.loadSavedEvents(user.uid);
       }); 
     } else {
       console.error('User ID is not available');
@@ -73,6 +75,19 @@ export class PossibleMatchesPage implements OnInit {
     } catch (error) {
       console.error('Error fetching interested users:', error);
     }
+  }
+
+  // Method to load saved events
+  loadSavedEvents(userId: string) {
+    this.firebaseService.getSavedEvents(userId).subscribe(
+      events => {
+        this.events = events;
+        console.log('Saved Events:', this.events);
+      },
+      error => {
+        console.error('Error loading saved events:', error);
+      }
+    );
   }
 
   // Function to add another user to the invite list when the user clicks the "Add" button

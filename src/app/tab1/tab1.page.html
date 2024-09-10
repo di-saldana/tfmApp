@@ -33,11 +33,14 @@
 
   <ion-card *ngFor="let event of evento">
     <ion-img [src]="event.images[0].url"></ion-img>
+
     <ion-card-header>
-      <ion-card-title>{{ event.name }}</ion-card-title> 
-      <!-- Ahora mismo estoy guardando solo el nombre del evento (event.name) -->
+      <ion-card-title class="event-title">
+        {{ event.name }}
+        <!-- Ahora mismo estoy guardando solo el nombre del evento (event.name) -->
+      </ion-card-title>
       <ion-icon name="add" (click)="addEvent(event.name)"  
-                style="position: absolute; top: 25px; right: 25px; font-size: 30px; color: var(--ion-color-primary);">
+                style="position: absolute; top: 15px; right: 20px; font-size: 30px; color: var(--ion-color-primary);">
       </ion-icon>
     </ion-card-header>
 
