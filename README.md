@@ -49,3 +49,8 @@ ConcertPal es una aplicación móvil diseñada para conectar a los amantes de la
    ionic cap open android   # Para Android
    ionic cap open ios       # Para iOS
    ```
+
+   ## App Preview
+   ![Description](https://drive.google.com/uc?export=view&id=1knCHaTv3UxXP7b_aa7z9tHVZ_MSPWY1M)
+   ![Description](https://drive.google.com/uc?export=view&id=1PG1V47kCHuHFRD-B5YpsLPhfcUEaPSAz)
+
