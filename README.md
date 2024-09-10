@@ -51,6 +51,10 @@ ConcertPal es una aplicación móvil diseñada para conectar a los amantes de la
    ```
 
    ## App Preview
-   ![Description](https://drive.google.com/uc?export=view&id=1knCHaTv3UxXP7b_aa7z9tHVZ_MSPWY1M)
-   ![Description](https://drive.google.com/uc?export=view&id=1PG1V47kCHuHFRD-B5YpsLPhfcUEaPSAz)
+
+| Events | Profile | Profile |
+|---------|---------|---------|
+| ![Events](https://drive.google.com/uc?export=view&id=1R6pqXxl7lac4YAQ18SokEJD3Ev_wIJEo) | ![Profile 1](https://drive.google.com/uc?export=view&id=19KHMphX5mLHWZ7HiwAWBO56BAAj09b9f) | ![Profile 2](https://drive.google.com/uc?export=view&id=1rpkGYDC_gN57uIuqo1w4crRgmJxyjLnn) |
+
+
 
