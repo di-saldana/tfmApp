@@ -50,6 +50,7 @@ export class Tab3Page {
   firebaseService = inject(FirebaseService);
   utilsService = inject(UtilsService);  
 
+  // Passes the event as an argument to possible-matches
   goToPossibleMatches(selectedEvent: string) {
     this.router.navigate(['/tabs/possible-matches'], { queryParams: { event: selectedEvent } });
   }

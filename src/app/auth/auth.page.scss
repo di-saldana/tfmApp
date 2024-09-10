@@ -1,0 +1,14 @@
+.centered-text {
+    text-align: center; /* Centers the entire text */
+}
+  
+.sign-up-link {
+    // color: #171158; 
+    font-weight: bold; 
+    text-decoration: none; /* Remove underline */
+}
+
+.sign-up-link:hover {
+    text-decoration: underline;
+}
+  
