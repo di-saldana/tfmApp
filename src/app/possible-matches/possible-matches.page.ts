@@ -108,7 +108,9 @@ export class PossibleMatchesPage implements OnInit {
       this.profiles.forEach(profile => {
         // Ensure profiles have saved_events to compare
         console.log(`Checking profile: ${profile.name}, with events: ${profile.saved_events}`);
+        console.log("Profile pic: ", profile.profile_picture)
         const commonEvents = profile.saved_events.filter((e: string) => this.saved_events.includes(e));
+        // TODO: Change ion-chip color of commonEvents
         
         // If there are common events, add the profile to possible_matches
         if (commonEvents.length > 0) {
@@ -116,7 +118,7 @@ export class PossibleMatchesPage implements OnInit {
             name: profile.name,
             uid: profile.uid,
             age: profile.age,
-            image: profile.image || 'https://ionicframework.com/docs/img/demos/avatar.svg',
+            image: profile.profile_picture || 'https://ionicframework.com/docs/img/demos/avatar.svg',
             saved_events: commonEvents,
             location: profile.location || 'Unknown',
             distance: profile.distance || 'Unknown'
@@ -127,7 +129,7 @@ export class PossibleMatchesPage implements OnInit {
   
     // Final possible matches
     console.log('Possible Matches:', possible_matches);
-  }      
+  }  
 
   // Method to load saved saved_events
   loadSavedEvents(userId: string): Promise<void> {

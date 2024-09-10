@@ -15,9 +15,9 @@ export class Tab3Page {
   userAge: number = 25;
   userDistance: number = 0; 
   favoriteArtists: any[] = [] // ['Lorde', 'Declan McKenna', 'Hozier'];
-  favoriteSongs: any[] = [] // ['Unknown / Nth', 'Team', 'The Key to Life on Earth'];
-  favoriteAlbums: any[] = [] // ['Melodrama', 'Unreal Unearth', 'Zeros', 'YHLQMDLG'];
-  favoriteGenres: any[] = [] // ['Indie pop', 'Alternative', 'Latin rock'];
+  favoriteSongs: any[] = []   // ['Unknown / Nth', 'Team', 'The Key to Life on Earth'];
+  favoriteAlbums: any[] = []  // ['Melodrama', 'Unreal Unearth', 'Zeros', 'YHLQMDLG'];
+  favoriteGenres: any[] = []  // ['Indie pop', 'Alternative', 'Latin rock'];
   events: any[] = [];
   artistImages: any[] = []; 
   userId: string = '';  
@@ -35,10 +35,10 @@ export class Tab3Page {
     if (user && user.uid) {
       this.userId = user.uid;
       this.userName = user.name;
-      this.userAge = user.age;
-      await this.loadUserProfile();
+      this.userAge = user.age; // TODO: CHECK
       this.loadSavedEvents(user.uid);
       this.loadTopAlbums();
+      await this.loadUserProfile();
       await this.loadTopArtists(); 
       await this.loadTopTracks();
     } else {

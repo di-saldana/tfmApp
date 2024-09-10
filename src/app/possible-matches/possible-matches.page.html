@@ -27,7 +27,7 @@
 
   <ion-card *ngFor="let profile of profiles">
     <!-- User's profile image -->
-    <ion-img alt="Profile Image" [src]="profile.image || 'https://ionicframework.com/docs/img/demos/avatar.svg'"></ion-img>
+    <ion-img alt="Profile Image" [src]="profile.profile_picture || 'https://ionicframework.com/docs/img/demos/avatar.svg'"></ion-img>
   
     <ion-card-header>
       <ion-card-title class="center-text">{{ profile.name }}, {{profile.age}}</ion-card-title>
