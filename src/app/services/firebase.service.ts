@@ -69,7 +69,7 @@ export class FirebaseService {
     });
   }
 
-  // Method to get saved_events
+  // Function to get saved_events
   getSavedEvents(uid: string): Observable<any[]> {
     return this.firestore.collection('users').doc(uid).valueChanges().pipe(
       map(userData => {
@@ -126,6 +126,64 @@ export class FirebaseService {
 
     return updateDoc(userDocRef, {
       invites: arrayUnion(userIdB)
+    });
+  }
+
+  // Add an invite from user1 to user2 (as part of user1's document)
+  async addInvite(userId1: string, userId2: string): Promise<void> {
+    const userDocRef = doc(getFirestore(), `users/${userId1}`);
+    
+    // Use arrayUnion to add userId2 to the 'invites' field
+    try {
+      await updateDoc(userDocRef, {
+        invites: arrayUnion(userId2) // This will add userId2 to the array of invites
+      });
+      console.log(`Invite from ${userId1} to ${userId2} added successfully.`);
+    } catch (error) {
+      console.error(`Error adding invite: ${error.message}`, error);
+      throw error;
+    }
+  }
+
+  async checkForInvite(userId2: string, userId1: string): Promise<boolean> {
+    const userDocRef = doc(getFirestore(), `users/${userId2}`);
+  
+    return getDoc(userDocRef).then((docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const invites = docSnapshot.data()?.['invites'] || [];
+        const inviteExists = invites.includes(userId1);
+        console.log(`Invite from ${userId2} to ${userId1} exists: ${inviteExists}`);
+        return inviteExists;
+      } else {
+        console.log(`User document for ${userId2} does not exist.`);
+        return false;
+      }
+    }).catch((error) => {
+      console.error(`Error checking for invite: ${error.message}`, error);
+      throw error;
+    });
+  }
+
+  // Add a match for both users
+  async addMatch(userId1: string, userId2: string): Promise<void> {
+    const user1DocRef = doc(getFirestore(), `users/${userId1}`);
+    const user2DocRef = doc(getFirestore(), `users/${userId2}`);
+
+    // Use arrayUnion to add each user to the other's matches field
+    return Promise.all([
+      updateDoc(user1DocRef, {
+        matches: arrayUnion(userId2) // Add userId2 to user1's matches array
+      }),
+      updateDoc(user2DocRef, {
+        matches: arrayUnion(userId1) // Add userId1 to user2's matches array
+      })
+    ])
+    .then(() => {
+      console.log(`Match between ${userId1} and ${userId2} added successfully.`);
+    })
+    .catch((error) => {
+      console.error(`Error adding match: ${error.message}`, error);
+      throw error;
     });
   }
 
@@ -259,7 +317,7 @@ export class FirebaseService {
     } 
   }
 
-  // Method to retrieve user ID given an email
+  // Function to retrieve user ID given an email
   async getUserIdByEmail(email: string): Promise<string> {
     const db = getFirestore();
     const usersRef = collection(db, 'users');

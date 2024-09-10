@@ -43,7 +43,11 @@ export class PossibleMatchesPage implements OnInit {
   constructor(private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit() {
+    const userAuth = this.firebaseService.getAuth().currentUser;
+    console.log("Authenticated User: ", userAuth);
+
     const user = this.utilsService.getFromLocalStorage('user');
+    console.log("USER: ", user, "\n\n")
     if (user && user.uid) {
       this.userId = user.uid;
       this.userName = user.name;
@@ -92,6 +96,9 @@ export class PossibleMatchesPage implements OnInit {
     }
   }  
 
+  // TODO: Fix bug -> Si el current user tiene mas de 2 saved_events, no muestra nada
+  // Al parecer solo esta anadiendo a 'profiles' usuarios que tenga todos los mismos eventos en comun. 
+  // Es decir, si tienen un artista que no esta en sus saved_events lo descarta o reescribe
   async loadAllUsers() {
     console.log('Loading all users...');
   
@@ -146,8 +153,8 @@ export class PossibleMatchesPage implements OnInit {
         }
       );
     });
-  }  
-
+  } 
+  
   // Function to add another user to the invite list when the user clicks the "Add" button
   // TODO: Delete card from list
   // TODO: Send notification
@@ -177,4 +184,45 @@ export class PossibleMatchesPage implements OnInit {
         loading.dismiss();
       });
   }
+
+  // Add an invite and check for a match
+  async addInviteAndCheckMatch(userIdB: string) {
+    try {
+      // 1. Add invite from current user (userId) to userB (userIdB)
+      await this.firebaseService.addInvite(this.userId, userIdB);
+
+      // 2. Check if userB has already invited the current user
+      const isMatched = await this.firebaseService.checkForInvite(userIdB, this.userId);
+
+      if (isMatched) {
+        // 3. If userB has already invited, add them to matches
+        await this.firebaseService.addMatch(this.userId, userIdB);
+
+        // Notify users about the match
+        this.utilsService.presentToast({
+          message: 'It\'s a match!',
+          duration: 2000,
+          position: 'bottom',
+          icon: 'heart'
+        });
+      } else {
+        // Invite sent but not a match yet
+        this.utilsService.presentToast({
+          message: 'Invite sent successfully!',
+          duration: 2000,
+          position: 'bottom',
+          icon: 'checkmark-circle-outline'
+        });
+      }
+    } catch (error) {
+      console.error('Error in sending invite or matching:', error);
+      this.utilsService.presentToast({
+        message: 'Error sending invite: ' + error.message,
+        duration: 2500,
+        position: 'bottom',
+        icon: 'alert-circle-outline'
+      });
+    }
+  }
+
 }

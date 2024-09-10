@@ -34,7 +34,8 @@
   
       <!-- 'Add' icon -->
       <ion-icon name="add" 
-                style="position: absolute; top: 15px; right: 25px; font-size: 30px; color: var(--ion-color-primary);">
+                style="position: absolute; top: 15px; right: 25px; font-size: 30px; color: var(--ion-color-primary);"
+                (click)="addInviteAndCheckMatch(profile.uid)">
       </ion-icon>
   
       <!-- User's saved events -->
