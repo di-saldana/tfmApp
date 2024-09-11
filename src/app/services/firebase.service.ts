@@ -1,12 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { getFirestore, setDoc, doc, getDoc, updateDoc, arrayUnion, collection, getDocs, query, where } from '@angular/fire/firestore'
+import { getFirestore, setDoc, doc, getDoc, updateDoc, arrayUnion, collection, getDocs, query, where, collectionData, Timestamp } from '@angular/fire/firestore'
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, sendPasswordResetEmail, fetchSignInMethodsForEmail } from 'firebase/auth';
 import { User } from '../models/user.model';
 import { UtilsService } from './utils.service';
-import { catchError, map, Observable, throwError } from 'rxjs';
+import { catchError, from, map, Observable, throwError } from 'rxjs';
 import { SpotifyService } from '../api/spotify/spotify.service'; 
+import { all } from 'axios';
 
 @Injectable({
   providedIn: 'root'
@@ -340,6 +341,129 @@ export class FirebaseService {
       console.error('Error fetching user ID by email:', error);
       return ''; // Return an empty string in case of an error
     }
+  }
+
+
+  // Function to get all users except the current user (owner)
+  async getAllUsers1(ownerUid: string): Promise<any[]> {
+    const db = getFirestore();
+    const usersRef = collection(db, 'users');
+
+    // Query to get all users from the 'users' collection
+    const q = query(usersRef);
+
+    const querySnapshot = await getDocs(q);
+
+    // Array to store all users except the current one
+    const allUsers: any[] = [];
+    console.log(allUsers);
+
+    // Loop through all user documents
+    querySnapshot.forEach((doc) => {
+      const userData = doc.data();
+
+      // Filter out the current user by checking their uid
+      if (userData['uid'] !== ownerUid) {
+        allUsers.push(userData);
+      }
+    });
+
+    return allUsers;
+  }
+
+  async getAllUsers(ownerUid: string): Promise<any[]> {
+    const db = getFirestore();
+    const usersRef = collection(db, 'users');
+    const querySnapshot = await getDocs(usersRef);
+
+    const allUsers: any[] = [];
+    querySnapshot.forEach((doc) => {
+      const userData = doc.data();
+      if (userData['uid'] !== ownerUid) {
+        allUsers.push(userData);
+      }
+    });
+
+    return allUsers;
+  }
+
+
+  getUsers(): Observable<any[]> {
+    return this.firestore.collection('users').valueChanges().pipe(
+      map(users => {
+        if (users) {
+          return users; // Returns all users
+        } else {
+          return []; // Returns an empty array if no users found
+        }
+      }),
+      catchError(error => {
+        console.error('Error fetching users:', error);
+        return throwError(() => new Error('Error fetching users'));
+      })
+    );
+  }
+
+  // Returns id of current user
+  getId(): string | null {
+    const user = getAuth().currentUser;
+    return user ? user.uid : null;
+  }
+
+  collectionRef(path) {
+    const firestore = getFirestore();
+    return collection(firestore, path);
+  }
+
+  collectionDataQuery(path, queryFn?) {
+    let dataRef: any = this.collectionRef(path);
+    if(queryFn) {
+      const q  = query(dataRef, queryFn);
+      dataRef = q;
+    }
+
+    const collection_data = collectionData<any>(dataRef);
+    return collection_data;
+  }
+
+  whereQuery(fieldPath, condition, value) {
+    return where(fieldPath, condition, value);
+  }  
+
+  // Messages
+  async sendMessage(senderId: string, recipientId: string, content: string) {
+    const db = getFirestore();
+
+    // Generate a unique chatRoomId using both userIds (could also use a unique roomId for group chats)
+    const chatRoomId = this.generateChatRoomId(senderId, recipientId);
+
+    // Create a reference to the chat room and messages collection
+    const messageRef = doc(db, `messages/${chatRoomId}/messages/${this.generateMessageId()}`);
+
+
+    // Prepare the message data
+    const messageData = {
+      senderId,
+      recipientId,
+      content,
+      timestamp: Timestamp.now(),
+      isRead: false
+    };
+
+    // Add the message to the messages collection
+    await setDoc(messageRef, messageData);
+  }
+
+  // Generate a consistent chatRoomId based on user IDs (for direct messages)
+  generateChatRoomId(userIdA: string, userIdB: string): string {
+    // Sort the IDs to ensure consistent ordering (so both users get the same chatRoomId)
+    const sortedIds = [userIdA, userIdB].sort();
+    return `${sortedIds[0]}_${sortedIds[1]}`;
+  }
+
+  // Generate a unique messageId (could use auto-generated IDs as well)
+  generateMessageId(): string {
+    return Math.random().toString(36).substr(2, 9); // Random message ID
   }
 
 }

@@ -1,0 +1,36 @@
+// ion-content {
+//     ion-list {
+//         ion-list-header {
+//             font-weight: 600;
+//             font-size: 1rem;
+//         }
+//         ion-item {
+//             margin-top: 2vh;
+//             ion-label {
+//                 font-size: 1.2rem;
+//                 p {
+//                   margin-top: 3px;
+//                 }
+//             }
+//             ion-text {
+//                 font-size: 0.9rem;
+//             }
+//         }
+//     }
+// }
+
+ion-content {
+    ion-list {
+        background: transparent;
+    }
+}
+ion-footer {
+    ion-toolbar {
+        padding: 0 3px;
+        ion-textarea {
+            border: 1px solid var(--ion-color-medium);
+            border-radius: 20px;
+            margin: 0.5vh 0;
+        }
+    }
+}

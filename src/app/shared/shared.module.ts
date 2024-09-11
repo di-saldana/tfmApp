@@ -5,20 +5,22 @@ import { CustomInputComponent } from './components/custom-input/custom-input.com
 import { LogoComponent } from './components/logo/logo.component';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
+import { EmptyScreenComponent } from './components/empty-screen/empty-screen.component';
 
 
 @NgModule({
   declarations: [
     HeaderComponent,
     CustomInputComponent,
-    LogoComponent
+    LogoComponent,
+    EmptyScreenComponent,
   ],
   exports: [
     HeaderComponent,
     CustomInputComponent,
     LogoComponent,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    EmptyScreenComponent,
   ],
   imports: [
     CommonModule,
