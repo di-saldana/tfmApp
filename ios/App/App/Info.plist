@@ -35,6 +35,8 @@
 	<string>We need your location to show relevant events nearby.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We need your location to show relevant events nearby.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>We need your location to show relevant events nearby.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
