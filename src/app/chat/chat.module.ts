@@ -19,6 +19,6 @@ import { ChatBoxComponent } from '../shared/components/chat-box/chat-box.compone
     ChatPageRoutingModule,
     SharedModule
   ],
-  declarations: [ChatPage, UserListComponent, ChatBoxComponent]
+  declarations: [ChatPage, UserListComponent] // ChatBoxComponent
 })
 export class ChatPageModule {}

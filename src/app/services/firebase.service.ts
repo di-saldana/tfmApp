@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { getFirestore, setDoc, doc, getDoc, updateDoc, arrayUnion, collection, getDocs, query, where, collectionData, Timestamp } from '@angular/fire/firestore'
+import { getFirestore, setDoc, doc, getDoc, updateDoc, arrayUnion, collection, getDocs, query, where, collectionData, Timestamp, addDoc, docData, Firestore, orderBy, OrderByDirection } from '@angular/fire/firestore'
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, sendPasswordResetEmail, fetchSignInMethodsForEmail } from 'firebase/auth';
 import { User } from '../models/user.model';
 import { UtilsService } from './utils.service';
@@ -410,6 +410,14 @@ export class FirebaseService {
     return user ? user.uid : null;
   }
 
+  // getId() {
+  //   const auth = getAuth();
+  //   console.log('current user auth: ', auth.currentUser);
+  //   this.currentUser = auth.currentUser;
+  //   console.log(this.currentUser);
+  //   return this.currentUser?.uid;
+  // }
+
   collectionRef(path) {
     const firestore = getFirestore();
     return collection(firestore, path);
@@ -430,7 +438,7 @@ export class FirebaseService {
     return where(fieldPath, condition, value);
   }  
 
-  // Messages
+  // Chat Messages
   async sendMessage(senderId: string, recipientId: string, content: string) {
     const db = getFirestore();
 
@@ -464,6 +472,45 @@ export class FirebaseService {
   // Generate a unique messageId (could use auto-generated IDs as well)
   generateMessageId(): string {
     return Math.random().toString(36).substr(2, 9); // Random message ID
+  }
+
+  docRef(path) {
+    return doc(getFirestore(), path);
+  }
+
+  addDocument(path, data) {
+    const dataRef = this.collectionRef(path);
+    return addDoc(dataRef, data); //add()
+  }
+
+  getDocById(path) {
+    const dataRef = this.docRef(path);
+    return getDoc(dataRef);
+  }
+
+  getDocs(path, queryFn?) {
+    let dataRef: any = this.collectionRef(path);
+    if(queryFn) {
+      const q = query(dataRef, queryFn);
+      dataRef = q;
+    }
+    return getDocs(dataRef); //get()
+  }
+
+  docDataQuery(path, id?, queryFn?) {
+    let dataRef: any = this.docRef(path);
+    if(queryFn) {
+      const q = query(dataRef, queryFn);
+      dataRef = q;
+    }
+    let doc_data;
+    if(id) doc_data = docData<any>(dataRef, {idField: 'id'});
+    else doc_data = docData<any>(dataRef); // valuechanges, for doc use docData
+    return doc_data;
+  }
+
+  orderByQuery(fieldPath, directionStr: OrderByDirection = 'asc') {
+    return orderBy(fieldPath, directionStr);
   }
 
 }

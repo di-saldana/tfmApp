@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
-import { ChatService } from '../services/chat/chat.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { Observable, take } from 'rxjs';
 import { FirebaseService } from '../services/firebase.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
+import { ChatService } from '../services/chat/chat.service';
+import { ModalController, PopoverController } from '@ionic/angular';
 
 @Component({
   selector: 'app-chat',
@@ -11,51 +12,100 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class ChatPage implements OnInit {
 
-  users = [
-    { id: 1, name: "Lola", photo: "https://i.pravatar.cc/315" }, 
-    { id: 2, name: "Lolo", photo: "https://i.pravatar.cc/325" }, 
-  ];
-  chats = [
-    {id: 1, sender: 1, message: 'hi'},
-    {id: 2, sender: 2, message: 'hi there!'},
-  ];
-  name: string = 'Sender';
-  // message: string;
-  // isLoading = false;
-  // currentUserId = 1;
+  @ViewChild('new_chat') modal: ModalController;
+  @ViewChild('popover') popover: PopoverController;
+  segment = 'chats';
+  open_new_chat = false;
+  users: Observable<any[]>;
+  chatRooms: Observable<any[]>;
+  model = {
+    icon: 'chatbubbles-outline',
+    title: 'No Matches Yet',
+    color: 'danger'
+  };
 
-  currentUserId: string = 'TUjdQy6JfdXy0hPuApwKuSzyeFm1';  // Use your actual logic to get the current user ID
-  recipientId: string = 'XezGAxDX4GfUe6WhrMveE81O5dz2';  // ID of the recipient user
-  message: string = '';  // Message to send
-  isLoading = false;  // To show spinner when sending
-
-  constructor(private firebaseService: FirebaseService, private route: ActivatedRoute) { }
+  constructor(private firebaseService: FirebaseService, 
+              private route: ActivatedRoute,
+              private router: Router,
+              private chatService: ChatService
+  ) { }
 
   ngOnInit() {
+    this.getRooms();
+    this.getUsers();
   }
 
-  startChat(item) {
-
+  getRooms() {
+    // this.chatService.getId();
+    this.chatService.getChatRooms();
+    this.chatRooms = this.chatService.chatRooms;
+    console.log('chatrooms: ', this.chatRooms);
   }
 
-  // Method to send a message
-  async sendMessage() {
-    if (!this.message.trim()) {
-      // Don't send empty messages
-      return;
-    }
+  onSegmentChanged(event: any) {
+    console.log(event);
+    this.segment = event.detail.value;
+  }
 
-    this.isLoading = true;
+  newChat() {
+    this.open_new_chat = true;
+    if(!this.users) this.getUsers();
+  }
 
+  getUsers() {
+    // this.chatService.getUsers();
+    this.chatService.getMatchedUsers();
+    this.users = this.chatService.users;
+    console.log("Users: ", this.users)
+  }
+
+  onWillDismiss(event: any) {}
+
+  cancel() {
+    this.modal.dismiss();
+    this.open_new_chat = false;
+  }
+
+  async startChat(item) {
     try {
-      console.log(this.currentUserId, this.recipientId, this.message);
-      await this.firebaseService.sendMessage(this.currentUserId, this.recipientId, this.message);
-      this.message = '';  // Clear the message input after sending
-    } catch (error) {
-      console.error('Error sending message:', error);
-    } finally {
-      this.isLoading = false;
+      // this.global.showLoader();
+      // create chatroom
+      const room = await this.chatService.createChatRoom(item?.uid);
+      console.log('room: ', room);
+      this.cancel();
+      const navData: NavigationExtras = {
+        queryParams: {
+          name: item?.name
+        }
+      };
+      this.router.navigate(['/', 'chat', 'chats', room?.id], navData); // home
+      // this.global.hideLoader();
+    } catch(e) {
+      console.log(e);
+      // this.global.hideLoader();
     }
+  }
+
+  getChat(item) {
+    (item?.user).pipe(
+      take(1)
+    ).subscribe(user_data => {
+      console.log('data: ', user_data);
+      const navData: NavigationExtras = {
+        queryParams: {
+          name: user_data?.name
+        }
+      };
+      this.router.navigate(['/', 'chat', 'chats', item?.id], navData);
+    });
+  }
+
+  getUser(user: any) {
+    return user;
+  }
+
+  signOut() {
+    this.firebaseService.signout();
   }
 
 }

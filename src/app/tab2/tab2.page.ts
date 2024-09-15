@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { ChatService } from '../services/chat/chat.service';
 import { FirebaseService } from '../services/firebase.service';
 
 
@@ -45,7 +44,7 @@ export class Tab2Page {
     { id: 2, name: "Lolo", photo: "https://i.pravatar.cc/325" }, 
   ];
 
-  constructor(private router: Router, private chatService: ChatService) {}
+  constructor(private router: Router) {}
 
   startChat(item: any) {
 

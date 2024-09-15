@@ -11,6 +11,7 @@ ion-item {
         padding: 4px 8px;
         margin-top: 12px;
         max-width: 70%;
+        min-width: 50%;
         ion-text {
             font-weight: 400;
             font-size: 0.9rem;
@@ -89,8 +90,7 @@ ion-item {
         height: 30px;
         transform: rotate(50deg);
         bottom: 0px;
-        right: 0px;
-        
+        right: 0px;     
     }
     ion-label {
         // background-color: #DCF8C6;

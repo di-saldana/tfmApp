@@ -13,8 +13,12 @@ const routes: Routes = [
     path: 'tabs',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule), canActivate: [AuthGuard]
   },
+  // {
+  //   path: 'chats/:id',
+  //   loadChildren: () => import('./chat/chat-rooms/chat-rooms-routing.module').then( m => m.ChatRoomsPageRoutingModule), canActivate: [AuthGuard]
+  // },
   {
-    path: 'chat/:id',
+    path: 'chat',
     loadChildren: () => import('./chat/chat.module').then( m => m.ChatPageModule), canActivate: [AuthGuard]
   },
   {
