@@ -1,42 +1,59 @@
-ion-tabs{
-	ion-fab {
-		margin-bottom: env(safe-area-inset-bottom); /* fix notch ios*/
-		ion-fab-button {
-			--box-shadow: none;
+ion-tabs {
+    ion-fab {
+        margin-bottom: env(safe-area-inset-bottom); /* fix notch ios */
+        ion-fab-button {
+            --box-shadow: none;
+        }
+    }
+    ion-tab-bar {
+        --border: 0;
+        --background: transparent; /* Make the tab bar background transparent */
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        &:after {
+            content: " ";
+            width: 100%;
+            bottom: 0;
+			// background: var(--ion-color-light);
+            background: var(--ion-color-primary); /* Background color of the tab bar */
+            height: env(safe-area-inset-bottom);
+            position: absolute;
+        }
+        ion-tab-button {
+			// --background: var(--ion-color-light);
+
+            --background: var(--ion-color-primary); //transparent; 
+            --color: white; /* Default icon color */
+            --color-activated: #b98eed; 
+			///
+			ion-icon {
+                color: var(--color); 
+            }
 		}
-	}
-	ion-tab-bar {
-		--border: 0;
-		--background: transparent;
-		position: absolute;
-		bottom: 0;
-		left:0; right: 0;
-		width: 100%;
-		&:after{
-			content: " ";
-			width: 100%;
-			bottom: 0;
-			background: var(--ion-color-light);
-			height: env(safe-area-inset-bottom);
-			position: absolute;
-		}
-		ion-tab-button {
-			--background: var(--ion-color-light);
-		}
-		ion-tab-button.right {
-			margin-right: 0px;
-			border-top-right-radius: 18px;
-		}
-		ion-tab-button.left {
-			margin-left: 0px;
-			border-top-left-radius: 18px;
-		}
-		svg {    
-			width: 72px;
-			margin-top: 19px;
-			path{
-				fill:  var(--ion-color-light);
-			}		
-		}
-	}
+		///
+		ion-tab-button[aria-selected="true"] {
+			--color-activated: #c9f031; 
+            ion-icon {
+                color: var(--color-activated); /* Color when the tab is active */
+            }
+        }
+        ion-tab-button.right {
+            margin-right: 0px;
+            border-top-right-radius: 18px;
+        }
+        ion-tab-button.left {
+            margin-left: 0px;
+            border-top-left-radius: 18px;
+        }
+        svg {
+            width: 72px;
+            margin-top: 19px;
+            path {
+                fill: var(white); //--color); 
+            }
+        }
+    }
 }

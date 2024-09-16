@@ -10,6 +10,7 @@
 </ion-header>
 
 <ion-content>
+
     <div class="d-flex-center">
         <form [formGroup]="form" class="auth-form" (ngSubmit)="submit()" (keypress.enter)="submit()">
             <app-logo></app-logo>
@@ -41,6 +42,16 @@
                 <div *ngIf="form.controls.age.errors?.['required']">The age is required.</div>
                 <div *ngIf="form.controls.age.errors?.['min']">The age must be 18 or older.</div>
             </div>  
+
+            <!-- Country -->
+            <ion-item lines="none">
+                <ion-icon slot="start" name="planet-outline"></ion-icon>
+                <ion-select formControlName="country" placeholder="Country">
+                    <ion-select-option *ngFor="let country of countries" [value]="country">
+                    {{ country }}
+                    </ion-select-option>
+                </ion-select>
+            </ion-item>
 
             <!-- Email -->
             <app-custom-input 

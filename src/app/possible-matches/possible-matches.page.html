@@ -12,7 +12,6 @@
     <!-- Chat -->
     <ion-buttons slot="end">
       <ion-button routerLink="/chat">
-        <!-- /tabs/chat -->
         <ion-icon name="chatbubble-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -26,28 +25,46 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-card *ngFor="let profile of profiles">
+  <!-- List of ion-cards -->
+  <ion-card *ngFor="let match of possible_matches">
+    <!-- (click)="goToProfile(match)"> -->
     <!-- User's profile image -->
-    <ion-img alt="Profile Image" [src]="profile.profile_picture || 'https://ionicframework.com/docs/img/demos/avatar.svg'"></ion-img>
-  
+    <ion-img alt="Profile Image" [src]="match.image || 'https://ionicframework.com/docs/img/demos/avatar.svg'"></ion-img>
+
     <ion-card-header>
-      <ion-card-title class="center-text">{{ profile.name }}, {{profile.age}}</ion-card-title>
-  
+      <ion-card-title class="center-text">{{ match.name }}, {{ match.age }} {{ match.flag }}</ion-card-title>
+      <ion-card-subtitle>0 mi</ion-card-subtitle>
+
       <!-- 'Add' icon -->
       <ion-icon name="add" 
                 style="position: absolute; top: 15px; right: 25px; font-size: 30px; color: var(--ion-color-primary);"
-                (click)="addInviteAndCheckMatch(profile.uid)">
+                (click)="addInviteAndCheckMatch(match.uid)">
       </ion-icon>
-  
-      <!-- User's saved events -->
+
       <div style="display: flex; flex-wrap: wrap; margin-top: 15px;">
-        <ion-chip *ngFor="let event of profile.saved_events" 
+        <ion-chip *ngFor="let event of match.saved_events" 
+                  [ngClass]="{ 'common-event-chip': match.common_events.includes(event) }"
                   style="margin: 5px; width: auto; padding: 5px 10px; white-space: nowrap;">
           <ion-label>{{ event }}</ion-label>
         </ion-chip>
+      </div>      
+
+      <!-- User's favorite albums -->
+      <div style="display: flex; margin-top: 10px; gap: 10px;">
+        <ion-avatar *ngFor="let album of match.top_albums" style="width: 80px; height: 80px;">
+          <img [src]="album.image || 'https://ionicframework.com/docs/img/demos/card-media.png'" alt="Album Avatar">
+        </ion-avatar>
       </div>
+
     </ion-card-header>
   </ion-card>
+
+  <!-- Si no hay matches -->
+  <!-- <ion-card *ngIf="possible_matches.length === 0">
+    <ion-card-header>
+      <ion-card-title>No possible matches found.</ion-card-title>
+    </ion-card-header>
+  </ion-card> -->
   
   <ion-footer>
     <ion-toolbar style="visibility: hidden;"/>

@@ -2,6 +2,8 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FirebaseService } from '../services/firebase.service';
 import { UtilsService } from '../services/utils.service';
+import { LocationService } from '../services/location/location.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-possible-matches',
@@ -9,38 +11,21 @@ import { UtilsService } from '../services/utils.service';
   styleUrls: ['./possible-matches.page.scss'],
 })
 export class PossibleMatchesPage implements OnInit {
-
-  /*
-    - possible_matches = [
-        {
-          name: "User 2", 
-          uid: "gaergSFSFSasda", 
-          age: '20',
-          image: 'https://ionicframework.com/docs/img/demos/avatar.svg',
-          saved_events: ["Residente", "Camilo"], 
-          location: 'New York',
-          distance: "2 miles"
-        },
-        {
-          name: "User 3", 
-          uid: "gaergSFSFSasdax", 
-          age: '30',
-          image: 'https://ionicframework.com/docs/img/demos/avatar.svg',
-          saved_events: ["Black Pumas", "Hozier"], 
-          location: 'Madrid',
-          distance: "12 km"
-        }
-      ]
-  */
-
   userId: string = '';  
   userName: string = '';
+  userAge: number = 25;
   saved_events: any[] = [];
   event_name: string = '';
+  favoriteAlbums: any[] = [] 
   profiles: any[] = []; // Users with same saved events
   possible_matches: any[] = []; 
+  userFlag: string;
 
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(private router: Router, 
+    private route: ActivatedRoute, 
+    private locationService: 
+    LocationService,
+    private http: HttpClient) {}
 
   ngOnInit() {
     const userAuth = this.firebaseService.getAuth().currentUser;
@@ -51,6 +36,7 @@ export class PossibleMatchesPage implements OnInit {
     if (user && user.uid) {
       this.userId = user.uid;
       this.userName = user.name;
+      this.userAge = user.age;
 
       // Retrieve the event_name from query parameters from tab3
       // this.route.queryParams.subscribe(params => {
@@ -62,6 +48,7 @@ export class PossibleMatchesPage implements OnInit {
       // Para asegurar que `loadSavedEvents` se completa antes de llamar a `loadAllUsers`
       this.loadSavedEvents(user.uid).then(() => {
         this.loadAllUsers();
+        this.loadTopAlbums();
       }).catch(error => {
         console.error('Error loading saved events:', error);
       });
@@ -77,15 +64,15 @@ export class PossibleMatchesPage implements OnInit {
   // TODO: Implement correctly
   goToProfile(profile: any) {
     this.router.navigate(['/tabs/tab3'], { queryParams: { profileId: profile.id, profileName: profile.name } });
-  }
+  } 
 
   async loadUsersInterestedInEvent(event_name: string): Promise<any[]> {
     try {
       const user = this.utilsService.getFromLocalStorage('user');
       if (user && user.uid) {
-        this.profiles = await this.firebaseService.getUsersByEvent(event_name, user.uid);
-        console.log('Profiles: ', this.profiles);  // Log to verify structure
-        return this.profiles;  // Return the profiles array
+        const profiles = await this.firebaseService.getUsersByEvent(event_name, user.uid);
+        console.log('Profiles for event:', event_name, profiles);  // Log to verify structure
+        return profiles;  // Return the profiles array instead of assigning it to `this.profiles`
       } else {
         console.error('User ID is not available');
         return [];
@@ -94,48 +81,53 @@ export class PossibleMatchesPage implements OnInit {
       console.error('Error fetching interested users:', error);
       return [];
     }
-  }  
+  }
 
-  // TODO: Fix bug -> Si el current user tiene mas de 2 saved_events, no muestra nada
-  // Al parecer solo esta anadiendo a 'profiles' usuarios que tenga todos los mismos eventos en comun. 
-  // Es decir, si tienen un artista que no esta en sus saved_events lo descarta o reescribe
   async loadAllUsers() {
     console.log('Loading all users...');
+    const loading = await this.utilsService.loading(); 
+    await loading.present();
   
-    const possible_matches: any[] = []; 
+    let possible_matches: any[] = [];  // Local variable to hold matches during the process
   
     // Iterate over each saved event of the current user
     for (const event of this.saved_events) {
       console.log(`Fetching users interested in event: ${event}`);
-      await this.loadUsersInterestedInEvent(event); // Fetch users interested in this event
+      const profiles = await this.loadUsersInterestedInEvent(event); // Fetch users interested in this event
       
-      console.log(`Profiles interested in event "${event}":`, this.profiles);
+      console.log(`Profiles interested in event "${event}":`, profiles);
   
-      // Process the fetched profiles to filter and add to possible_matches
-      this.profiles.forEach(profile => {
-        // Ensure profiles have saved_events to compare
+      // Use a for...of loop to handle async operations
+      for (const profile of profiles) {
         console.log(`Checking profile: ${profile.name}, with events: ${profile.saved_events}`);
-        console.log("Profile pic: ", profile.profile_picture)
+        console.log("Profile pic: ", profile.profile_picture);
         const commonEvents = profile.saved_events.filter((e: string) => this.saved_events.includes(e));
-        // TODO: Change ion-chip color of commonEvents
-        
+        const topAlbums = await this.loadTopAlbumsForUser(profile.uid);
+
         // If there are common events, add the profile to possible_matches
         if (commonEvents.length > 0) {
+          const flag = await this.getUserFlag(profile.uid); // Await the flag fetch
+          console.log('User flag:', flag);
           possible_matches.push({
             name: profile.name,
             uid: profile.uid,
             age: profile.age,
+            flag: flag,
             image: profile.profile_picture || 'https://ionicframework.com/docs/img/demos/avatar.svg',
-            saved_events: commonEvents,
-            location: profile.location || 'Unknown',
-            distance: profile.distance || 'Unknown'
+            common_events: commonEvents,
+            saved_events: profile.saved_events,
+            top_albums: topAlbums,
+            location: profile.location || 'Unknown', // TODO: Borrar
+            distance: profile.distance || 'Unknown' // TODO: Borrar
           });
         }
-      });
+      }
     }
   
-    // Final possible matches
-    console.log('Possible Matches:', possible_matches);
+    // Only update `this.possible_matches` after processing all events
+    this.possible_matches = possible_matches;
+    console.log('Final Possible Matches:', this.possible_matches);
+    await loading.dismiss();
   }  
 
   // Method to load saved saved_events
@@ -222,6 +214,89 @@ export class PossibleMatchesPage implements OnInit {
         position: 'bottom',
         icon: 'alert-circle-outline'
       });
+    }
+  }
+
+  async loadTopAlbums() {
+    const apiUrl = 'https://ws.audioscrobbler.com/2.0/';
+    const apiKey = '6b949ae3e54e839ec00f53bf82c6a120';  // Last.fm API key
+  
+    try {
+      // Retrieve the user object from local storage or Firebase
+      const user = this.utilsService.getFromLocalStorage('user');
+      
+      // Fetch last_fm_id from Firebase
+      const userProfile = await this.firebaseService.getUserProfile(user.uid);
+      const lastFmId = userProfile.last_fm_id;
+  
+      if (!lastFmId) {
+        console.error('No Last.fm ID found for user');
+        return;
+      }
+  
+      const params = {
+        method: 'user.getTopAlbums',
+        user: lastFmId,
+        limit: '4',
+        api_key: apiKey,
+        format: 'json'
+      };
+  
+      // Fetch the top albums from Last.fm API
+      const response: any = await this.http.get(apiUrl, { params }).toPromise();
+      this.favoriteAlbums = response.topalbums.album.map((album: any) => ({
+        name: album.name,
+        image: album.image.find((img: any) => img.size === 'large')?.['#text'] || 'https://ionicframework.com/docs/img/demos/card-media.png'
+      }));
+      
+    } catch (error) {
+      console.error('Error fetching top albums: ', error);
+    }
+  }  
+
+  // Fetch top albums based on a user's Last.fm ID from Firebase
+  async loadTopAlbumsForUser(userId: string): Promise<any[]> {
+    const apiUrl = 'https://ws.audioscrobbler.com/2.0/';
+    const apiKey = '6b949ae3e54e839ec00f53bf82c6a120';  // Last.fm API key
+    
+    try {
+      // Fetch user profile from Firebase
+      const userProfile = await this.firebaseService.getUserProfile(userId);
+      const lastFmId = userProfile.last_fm_id;
+
+      if (!lastFmId) {
+        console.error('No Last.fm ID found for user:', userId);
+        return [];
+      }
+
+      const params = {
+        method: 'user.getTopAlbums',
+        user: lastFmId,
+        limit: '4',
+        api_key: apiKey,
+        format: 'json'
+      };
+
+      // Fetch the top albums from Last.fm API
+      const response: any = await this.http.get(apiUrl, { params }).toPromise();
+      
+      return response.topalbums.album.map((album: any) => ({
+        name: album.name,
+        image: album.image.find((img: any) => img.size === 'large')?.['#text'] || 'https://ionicframework.com/docs/img/demos/card-media.png'
+      }));
+
+    } catch (error) {
+      console.error('Error fetching top albums for user:', userId, error);
+      return [];
+    }
+  }
+
+  async getUserFlag(userId: string): Promise<string> {
+    try {
+      return await this.locationService.getUserCountryFlag(userId);
+    } catch (error) {
+      console.error('Error getting user flag:', error);
+      return '🏳'; // Return a default flag if there is an error
     }
   }
 

@@ -1,14 +1,16 @@
 export interface User {
     uid: string,
     spotify_id?: string,
+    last_fm_id?: string,
     email: string,
     password: string,
     name: string,
     age: number,
+    country: string,
     profile_picture?: string,
     saved_events?: string[],
     invites?: string[], 
-    matches?: string[]
+    matches?: string[],
     // fave artists, tracks, albums, genres
 }
 

@@ -4,6 +4,7 @@ import { FirebaseService } from '../services/firebase.service';
 import { UtilsService } from '../services/utils.service';
 import { SpotifyService } from '../api/spotify/spotify.service';
 import { HttpClient } from '@angular/common/http';
+import { LocationService } from '../services/location/location.service';
 
 @Component({
   selector: 'app-tab3',
@@ -23,11 +24,13 @@ export class Tab3Page {
   userId: string = '';  
   users_interested: any[] = [];
   profileImage: string = 'https://ionicframework.com/docs/img/demos/avatar.svg'; // Default image
+  userFlag: string;
 
   constructor(
     private router: Router, 
     public spotifyService: SpotifyService,
-    private http: HttpClient
+    private http: HttpClient,
+    private locationService: LocationService
   ) {}
 
   async ngOnInit() {
@@ -38,9 +41,22 @@ export class Tab3Page {
       this.userAge = user.age; // TODO: CHECK
       this.loadSavedEvents(user.uid);
       this.loadTopAlbums();
-      await this.loadUserProfile();
+      this.getUserFlag();
       await this.loadTopArtists(); 
       await this.loadTopTracks();
+
+      // TODO: Call loadUserProfile if a Spotify account user id exists, if not, call loadProfilePic
+      // await this.loadUserProfile();
+      // await this.loadProfilePic(user.uid);
+
+      // Check if the user has a Spotify account linked
+      if (user.spotifyUserId) {
+        // If the Spotify account is linked, load the Spotify user profile
+        await this.loadUserProfile();
+      } else {
+        // Otherwise, load the profile picture from Firebase
+        await this.loadProfilePic(user.uid);
+      }
     } else {
       console.error('User ID is not available');
       this.router.navigate(['/auth']);
@@ -76,14 +92,34 @@ export class Tab3Page {
   // Load user profile from Spotify
   async loadUserProfile() {
     try {
+      const loading = await this.utilsService.loading();
+      await loading.present();
+
       const userProfile = await this.spotifyService.getUserProfile();
       if (userProfile) {
         this.profileImage = userProfile.images?.[1]?.url || 'https://ionicframework.com/docs/img/demos/avatar.svg'; // Default image
         this.userName = userProfile.display_name || this.userName;
       }
+
+      await loading.dismiss();
     } catch (error) {
       console.error('Error loading user profile:', error);
     }
+  }
+
+  async loadProfilePic(userId: string) {
+    const loading = await this.utilsService.loading();
+    await loading.present();
+    this.firebaseService.getProfilePicture(userId).subscribe(
+      pic => {
+        this.profileImage = pic;
+        console.log('Picture: ', this.profileImage);
+        loading.dismiss();
+      },
+      error => {
+        console.error('Error loading saved events:', error);
+      }
+    );
   }
   
   // Method to load saved events
@@ -153,6 +189,14 @@ export class Tab3Page {
       }
     } catch (error) {
       console.error('Error loading top tracks:', error);
+    }
+  }
+
+  async getUserFlag() {
+    try {
+      this.userFlag = await this.locationService.getUserCountryFlag(this.userId);
+    } catch (error) {
+      console.error('Error getting user flag:', error);
     }
   }
 

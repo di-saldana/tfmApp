@@ -58,6 +58,9 @@ export class Tab1Page implements OnInit {
   // Get user's current location and load events based on that location
   async getUserLocationAndLoadEvents() {
     try {
+      const loading = await this.utilsService.loading(); 
+      await loading.present();
+
       // Get the current position using Capacitor Geolocation
       const position = await Geolocation.getCurrentPosition();
 
@@ -68,6 +71,7 @@ export class Tab1Page implements OnInit {
 
       // Load events w user's current location
       await this.loadEventsByLatLong(lat, lng);
+      await loading.dismiss();
     } catch (error) {
       console.error('Error getting user location:', error);
     }

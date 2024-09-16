@@ -87,6 +87,23 @@ export class FirebaseService {
     );
   }
 
+  // Function to get profile picutre
+  getProfilePicture(uid: string) {
+    return this.firestore.collection('users').doc(uid).valueChanges().pipe(
+      map(userData => {
+        if (userData) {
+          return userData['profile_picture'] || ""; 
+        } else {
+          return "";
+        }
+      }),
+      catchError(error => {
+        console.error('Error fetching user data:', error);
+        return throwError(() => new Error('Error fetching user data'));
+      })
+    );
+  }
+
   // Function to get users interested in a specific event
   async getUsersByEvent(event_name: string, ownerUid: string): Promise<any[]> {
     if (!event_name) {
@@ -318,6 +335,21 @@ export class FirebaseService {
     } 
   }
 
+  async getUserProfile(userId: string): Promise<User> {
+    try {
+      const userRef = this.firestore.collection('users').doc(userId);
+      const userDoc = await userRef.get().toPromise();
+      if (userDoc.exists) {
+        return userDoc.data() as User;
+      } else {
+        throw new Error('User not found');
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      throw error;
+    }
+  }
+
   // Function to retrieve user ID given an email
   async getUserIdByEmail(email: string): Promise<string> {
     const db = getFirestore();
@@ -343,34 +375,6 @@ export class FirebaseService {
     }
   }
 
-
-  // Function to get all users except the current user (owner)
-  async getAllUsers1(ownerUid: string): Promise<any[]> {
-    const db = getFirestore();
-    const usersRef = collection(db, 'users');
-
-    // Query to get all users from the 'users' collection
-    const q = query(usersRef);
-
-    const querySnapshot = await getDocs(q);
-
-    // Array to store all users except the current one
-    const allUsers: any[] = [];
-    console.log(allUsers);
-
-    // Loop through all user documents
-    querySnapshot.forEach((doc) => {
-      const userData = doc.data();
-
-      // Filter out the current user by checking their uid
-      if (userData['uid'] !== ownerUid) {
-        allUsers.push(userData);
-      }
-    });
-
-    return allUsers;
-  }
-
   async getAllUsers(ownerUid: string): Promise<any[]> {
     const db = getFirestore();
     const usersRef = collection(db, 'users');
@@ -386,7 +390,6 @@ export class FirebaseService {
 
     return allUsers;
   }
-
 
   getUsers(): Observable<any[]> {
     return this.firestore.collection('users').valueChanges().pipe(
@@ -409,14 +412,6 @@ export class FirebaseService {
     const user = getAuth().currentUser;
     return user ? user.uid : null;
   }
-
-  // getId() {
-  //   const auth = getAuth();
-  //   console.log('current user auth: ', auth.currentUser);
-  //   this.currentUser = auth.currentUser;
-  //   console.log(this.currentUser);
-  //   return this.currentUser?.uid;
-  // }
 
   collectionRef(path) {
     const firestore = getFirestore();
