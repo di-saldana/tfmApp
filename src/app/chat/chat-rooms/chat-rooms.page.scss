@@ -10,6 +10,37 @@ ion-footer {
             border: 1px solid var(--ion-color-medium);
             border-radius: 20px;
             margin: 0.5vh 0;
+            ///
+            margin-bottom: 30px;
+            --height: 30px;
+        }
+        ///
+        ion-buttons {
+            ion-fab-button {
+                margin-bottom: 40px;
+            }
         }
     }
+}
+
+.custom-textarea {
+    display: flex;
+    justify-content: flex-start; /* Aligns text to the start (left) */
+    // align-items: center; /* Centers the placeholder text vertically */
+    text-align: left; /* Ensures text starts from the left */
+    height: 100%; /* Ensures full height of the textarea */
+    padding: 0 10px; /* Adds some padding to the sides */
+    font-family: 'Poppins', sans-serif;
+}
+
+.custom-textarea .native-textarea {
+    padding-top: 10px; /* Ensures the placeholder text is vertically centered */
+}
+
+.custom-textarea ::placeholder {
+    text-align: left; /* Ensures placeholder text is aligned to the left */
+}
+
+.ion-text-center {
+    text-align: left !important; /* Overrides the centering from .ion-text-center */
 }

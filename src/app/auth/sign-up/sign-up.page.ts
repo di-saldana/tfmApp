@@ -73,7 +73,7 @@ export class SignUpPage implements OnInit {
 
         this.utilsService.presentToast({
           message: error.message,
-          duration: 2500,
+          duration: 1500,
           position: 'middle',
           icon: 'alert-circle-outline'
         })
@@ -111,7 +111,7 @@ export class SignUpPage implements OnInit {
 
         this.utilsService.presentToast({
           message: error.message,
-          duration: 2500,
+          duration: 1500,
           position: 'middle',
           icon: 'alert-circle-outline'
         })

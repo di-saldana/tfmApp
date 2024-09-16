@@ -18,7 +18,7 @@ export class Tab1Page implements OnInit {
   events: any[] = []; 
   evento: any; 
   filteredEvents: any[] = [];
-  searchTerm: string = '';  
+  searchTerm: string = ''; 
 
   constructor(private ticketmasterAPIService: TicketmasterService, 
               private firestore: AngularFirestore, 
@@ -115,19 +115,20 @@ export class Tab1Page implements OnInit {
     }
   }
 
+  // Filter events by artist or event name
   async filterEvents(searchTerm: string) {
-    console.log("SearchTerm: " + searchTerm)
+    console.log('Search term:', searchTerm);
 
-    if (!searchTerm) {
-      this.events = [];
+    if (!searchTerm || searchTerm.trim() === '') {
+      this.filteredEvents = [...this.evento]; // Reset to original event list 
       return;
     }
 
     try {
-      // Call getEventsByArtist with the searchTerm
-      this.evento = await this.ticketmasterAPIService.getEventsByArtist(searchTerm);
-      this.filteredEvents = this.evento;
-      console.log(this.evento)
+      this.filteredEvents = await this.ticketmasterAPIService.getEventsByArtist(searchTerm);
+      if (this.filteredEvents.length === 0) {
+        console.log('No matching events found');
+      }
     } catch (error) {
       console.error('Error filtering events:', error);
       this.filteredEvents = [];
@@ -147,16 +148,16 @@ export class Tab1Page implements OnInit {
       .then(() => {
         this.utilsService.presentToast({
           message: 'Event added successfully!',
-          duration: 2000,
-          position: 'bottom',
+          duration: 1500,
+          position: 'middle',
           icon: 'checkmark-circle-outline'
         });
       })
       .catch((error) => {
         this.utilsService.presentToast({
           message: 'Error adding event: ' + error.message,
-          duration: 2500,
-          position: 'bottom',
+          duration: 1500,
+          position: 'middle',
           icon: 'alert-circle-outline'
         });
         console.error('Error adding event: ', error);

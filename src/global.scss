@@ -168,3 +168,71 @@ ion-card {
 ion-searchbar {
     border-radius: 15px;
 }
+
+/* Poppins Font Styles */
+.poppins-regular {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+}
+
+.poppins-medium {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+}
+
+.poppins-semibold {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+}
+
+.poppins-bold {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+}
+
+/* Applying Poppins to ion-title and ion-subtitle */
+ion-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600; /* You can adjust this weight according to your design */
+}
+
+ion-subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400; /* Regular weight for subtitle */
+}
+
+/* Poppins Font Styles */
+.poppins-regular {
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+}
+
+.poppins-medium {
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+}
+
+.poppins-semibold {
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+}
+
+.poppins-bold {
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+}
+
+/* Applying Poppins to ion-title and ion-subtitle */
+ion-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600; /* You can adjust this weight according to your design */
+}
+
+ion-subtitle {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400; /* Regular weight for subtitle */
+}
+  
+ion-label, ion-card-title, ion-card-subtitle, ion-button, ion-searchbar, ion-textarea, p, h1, h2, h3, h4 {
+    font-family: 'Poppins', sans-serif;
+}

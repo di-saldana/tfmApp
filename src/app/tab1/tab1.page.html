@@ -28,7 +28,7 @@
   </ion-header>
 
   <ion-searchbar 
-    placeholder="Search Event" 
+    placeholder="Search Event by Artist" 
     [(ngModel)]="searchTerm"
     (keyup.enter)="filterEvents(searchTerm)">
   </ion-searchbar>
@@ -46,14 +46,17 @@
       </ion-icon>
     </ion-card-header>
 
-    <!-- TODO: Date format legible -->
     <ion-card-content>
-      <ion-icon name="calendar" style="font-size: 25px;"></ion-icon>
-      {{ event.dates.start.localDate }}
-      <br>  
-      <ion-icon name="location" style="font-size: 25px;"></ion-icon>
-      {{ event._embedded.venues[0].name }}, {{ event._embedded.venues[0].city.name }}
+      <div class="icon-text-row">
+        <ion-icon name="calendar" style="font-size: 25px;"></ion-icon>
+        <span>{{ event.dates.start.localDate | date:'MMM d, yyyy' }}</span>
+      </div>
+      <div class="icon-text-row">
+        <ion-icon name="location" style="font-size: 25px;"></ion-icon>
+        <span>{{ event._embedded.venues[0].name }}, {{ event._embedded.venues[0].city.name }}</span>
+      </div>
     </ion-card-content>
+    
   </ion-card>
 
   <ion-footer>

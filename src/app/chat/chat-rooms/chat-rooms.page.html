@@ -32,9 +32,10 @@
       autoGrow 
       rows="1" 
       placeholder="Send message" 
-      class="ion-text-center" 
+      class="custom-textarea"
       [(ngModel)]="message">
     </ion-textarea>
+    <!-- class="ion-text-center"  -->
     <ion-buttons slot="end">
       <ion-fab-button *ngIf="!isLoading" size="small" color="primary" (click)="sendMessage()">
         <ion-icon name="send"></ion-icon>

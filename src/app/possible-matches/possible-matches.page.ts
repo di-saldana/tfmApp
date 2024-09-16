@@ -158,16 +158,16 @@ export class PossibleMatchesPage implements OnInit {
       .then(() => {
         this.utilsService.presentToast({
           message: 'Invite sent successfully!',
-          duration: 2000,
-          position: 'bottom',
+          duration: 1500,
+          position: 'middle',
           icon: 'checkmark-circle-outline'
         });
       })
       .catch((error) => {
         this.utilsService.presentToast({
           message: 'Error sending invite: ' + error.message,
-          duration: 2500,
-          position: 'bottom',
+          duration: 1500,
+          position: 'middle',
           icon: 'alert-circle-outline'
         });
         console.error('Error adding event: ', error);
@@ -193,16 +193,16 @@ export class PossibleMatchesPage implements OnInit {
         // Notify users about the match
         this.utilsService.presentToast({
           message: 'It\'s a match!',
-          duration: 2000,
-          position: 'bottom',
+          duration: 1500,
+          position: 'middle',
           icon: 'heart'
         });
       } else {
         // Invite sent but not a match yet
         this.utilsService.presentToast({
           message: 'Invite sent successfully!',
-          duration: 2000,
-          position: 'bottom',
+          duration: 1500,
+          position: 'middle',
           icon: 'checkmark-circle-outline'
         });
       }
@@ -210,8 +210,8 @@ export class PossibleMatchesPage implements OnInit {
       console.error('Error in sending invite or matching:', error);
       this.utilsService.presentToast({
         message: 'Error sending invite: ' + error.message,
-        duration: 2500,
-        position: 'bottom',
+        duration: 1500,
+          position: 'middle',
         icon: 'alert-circle-outline'
       });
     }
