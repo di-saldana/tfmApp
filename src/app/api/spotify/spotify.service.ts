@@ -167,7 +167,6 @@ export class SpotifyService {
       console.log('Token is still valid.');
     }
   }
-  
 
   private isTokenExpired(): boolean {
     const expirationTime = localStorage.getItem('token_expiration');

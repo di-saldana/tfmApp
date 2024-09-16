@@ -86,6 +86,7 @@ export class AuthPage implements OnInit {
   
   // Spotify Authentication
   async onAuthClick() {
+    console.log("Auth button clicked");
     try {
       // Start the Spotify authorization flow
       await this.spotifyService.requestAuthorization();
