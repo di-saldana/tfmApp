@@ -52,9 +52,12 @@ ConcertPal es una aplicación móvil diseñada para conectar a los amantes de la
 
    ## App Preview
 
-| Events | Profile | Profile |
-|---------|---------|---------|
-| ![Events](https://drive.google.com/uc?export=view&id=1R6pqXxl7lac4YAQ18SokEJD3Ev_wIJEo) | ![Profile 1](https://drive.google.com/uc?export=view&id=19KHMphX5mLHWZ7HiwAWBO56BAAj09b9f) | ![Profile 2](https://drive.google.com/uc?export=view&id=1rpkGYDC_gN57uIuqo1w4crRgmJxyjLnn) |
+| 🎵🎶🎼 | 🎵🎶🎼 | 🎵🎶🎼 | 🎵🎶🎼 |
+|---------|---------|---------|---------|
+| ![Image 1](https://drive.google.com/uc?export=view&id=1HD8nJuxIhxnmVGaiDU2IfoERLCTRuChS) | ![Image 4](https://drive.google.com/uc?export=view&id=1x-8y8iD1neBwNiFJT2ztHhoc5YJu7826) | ![Image 2](https://drive.google.com/uc?export=view&id=1UA6trDj99h015PZZ8KREoS6v1QzoIXmz) | ![Image 3](https://drive.google.com/uc?export=view&id=1BDuKk0TC1b9HQWzH3BFBlHOqHqvkgHTm) |  
+| ![Image 5](https://drive.google.com/uc?export=view&id=1ZLEh_aB-NBTPjFGkteqMiyKebGEqxzon) | ![Image 6](https://drive.google.com/uc?export=view&id=1VZR_RUMqImCSXZZJCsFmiRriZ8bwNDBC) | ![Image 7](https://drive.google.com/uc?export=view&id=1Wi8QWEtmR0vi-ge-DcuEkHVrG6UHtH1J) | ![Image 8](https://drive.google.com/uc?export=view&id=1D20QfCUF0_lBc7Hod36QT18JP5wJPfwE) |
+| ![Image 9](https://drive.google.com/uc?export=view&id=1DjrRftmEkAsa5uwNEEZk3OQCmZRP2HCL) | ![Image 10](https://drive.google.com/uc?export=view&id=1qp04XHIbJ_74HowF3ipUFqKc4Pzlc430) | ![Image 11](https://drive.google.com/uc?export=view&id=1pU7Mny-mXZtHG9OvL2F_YKfxfU87QyjJ) | ![Image 12](https://drive.google.com/uc?export=view&id=1APBJJcCkML7ZPI0HwEY15WxcxSxA21YQ) |
+
 
 
 
