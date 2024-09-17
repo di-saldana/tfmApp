@@ -326,4 +326,75 @@ export class SpotifyService {
     }
   }
 
+  ///
+  onPageLoad(): void {
+    this.client_id = this.client_id; // localStorage.getItem('client_id') || '';
+    this.client_secret = this.client_secret; // localStorage.getItem('client_secret') || '';
+    const queryString = window.location.search;
+    if (queryString.length > 0) {
+      this.handleRedirect(this.redirect_uri);
+    } else {
+      this.access_token = localStorage.getItem('access_token');
+      if (this.access_token === null) {
+        document.getElementById('tokenSection'); 
+      } else {
+        document.getElementById('deviceSection');
+      }
+    }
+  }
+
+  async handleRedirect(url: string): Promise<void> {
+    // Check if the URL contains the authorization code
+    if (url.startsWith(this.redirect_uri)) {
+      // const code = new URL(url).searchParams.get('code');
+      const code = this.getCode();
+      if (code) {
+        console.log("CODE:", code)
+        // Exchange the authorization code for access and refresh tokens
+        await this.fetchAccessToken(code);
+      }
+    }
+  }
+
+  private getCode(): string | null {
+    const queryString = window.location.search;
+    if (queryString.length > 0) {
+      const urlParams = new URLSearchParams(queryString);
+      return urlParams.get('code');
+    }
+    return null;
+  }
+
+  private fetchAccessToken(code: string): Promise<void> {
+    // const body = `grant_type=authorization_code&code=${code}&redirect_uri=${encodeURIComponent(this.redirect_uri)}`;
+    const body = `grant_type=client_credentials&redirect_uri=${encodeURIComponent(this.redirect_uri)}`;
+    
+    return this.callAuthorizationApi(body);
+  }
+
+  private callAuthorizationApi(body: string): Promise<void> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': 'Basic ' + btoa(`${this.client_id}:${this.client_secret}`)
+    });
+
+    return new Promise((resolve, reject) => {
+      this.http.post(this.TOKEN, body, { headers }).subscribe({
+        next: (response: any) => {
+          this.handleAuthorizationResponse(response);
+          resolve();
+        },
+        error: (err) => reject(err)
+      });
+    });
+  }
+
+  private handleAuthorizationResponse(response: any): void {
+    alert("before")
+    if (response.access_token) {
+      this.access_token = response.access_token;
+      localStorage.setItem('access_token', response.access_token);
+    }
+  }
+
 }

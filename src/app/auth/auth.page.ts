@@ -26,11 +26,11 @@ export class AuthPage implements OnInit {
   utilsService = inject(UtilsService);
 
   ngOnInit() {
-    // TODO: DELETE
-    // this.route.queryParams.subscribe(async (params) => {
-    //   console.log(params);
-    //   await this.spotifyService.onPageLoad();
-    // });
+    ///
+    this.route.queryParams.subscribe(async (params) => {
+      console.log(params);
+      await this.spotifyService.onPageLoad();
+    });
   }
 
   async submit() {
