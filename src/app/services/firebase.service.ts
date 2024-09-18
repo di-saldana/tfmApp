@@ -2,12 +2,11 @@ import { inject, Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { getFirestore, setDoc, doc, getDoc, updateDoc, arrayUnion, collection, getDocs, query, where, collectionData, Timestamp, addDoc, docData, Firestore, orderBy, OrderByDirection } from '@angular/fire/firestore'
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, sendPasswordResetEmail, fetchSignInMethodsForEmail } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, sendPasswordResetEmail, linkWithCredential } from 'firebase/auth';
 import { User } from '../models/user.model';
 import { UtilsService } from './utils.service';
 import { catchError, from, map, Observable, throwError } from 'rxjs';
 import { SpotifyService } from '../api/spotify/spotify.service'; 
-import { all } from 'axios';
 
 @Injectable({
   providedIn: 'root'
@@ -54,6 +53,153 @@ export class FirebaseService {
 
   async getDocument(path: string) {
     return (await getDoc(doc(getFirestore(), path))).data();
+  }
+
+  // Autenticacion con Spotify
+  async signinWithSpotify(email: string) {
+    return signInWithEmailAndPassword(getAuth(), email, '123456'); // Hardcoded just for troubleshooting
+  }
+
+  async checkIfEmailExists(email: string): Promise<boolean> {
+    const userRef = this.firestore.collection('users');
+    const querySnapshot = await userRef.ref.where('email', '==', email).get();
+  
+    // If any documents are returned, the email exists
+    return !querySnapshot.empty;
+  }
+
+  async setUserInfo(uid: string, email: string, name: string, spotifyId: string, image: string, age?: string): Promise<void> {
+    const userInfo = {
+      uid: uid || '',
+      spotify_id: spotifyId || '',
+      name: name || '',
+      email: email || '',
+      profile_picture: image || '',
+      saved_events: [] = [],
+      invites: [] = [],
+      matches: [] = [],
+      age: age || '',
+      last_fm_id: '', 
+      country: '', 
+    };
+  
+    const path = `users/${uid}`;
+  
+    try {
+      // Set the document in Firestore
+      await this.setDocument(path, userInfo);
+  
+      // Save to local storage and navigate
+      this.utilService.saveInLocalStorage('user', userInfo);
+      this.utilService.routerLink('/tabs/tab1');
+    } catch (error) {
+      console.error('Error setting user info:', error);
+  
+      // Show error toast
+      this.utilService.presentToast({
+        message: error.message,
+        duration: 2500,
+        position: 'middle',
+        icon: 'alert-circle-outline'
+      });
+    } 
+  }
+
+  async linkSpotifyToFirebase(email: string, spotifyId: string, name: string, image: string) {
+    try {
+      const auth = getAuth();
+      const emailExists = await this.checkIfEmailExists(email);
+      let uid: string;
+  
+      if (emailExists) {
+        // If email exists, sign in using the email and password
+        await signInWithEmailAndPassword(auth, email, '123456');
+        console.log('User signed in successfully!');
+        uid = await this.getUserIdByEmail(email);
+  
+        // Check if user document exists in Firestore
+        const userDocRef = doc(getFirestore(), `users/${uid}`);
+        const userDoc = await getDoc(userDocRef);
+  
+        if (!userDoc.exists()) {
+          // If user document does not exist, create a new one
+          await setDoc(userDocRef, {
+            email,
+            name,
+            spotifyId,
+            profile_picture: image || '',
+            uid: uid || '',
+            saved_events: [],
+            invites: [],
+            matches: [],
+            age: '',
+            last_fm_id: '',
+            country: '',
+          });
+          console.log('User info saved to Firestore successfully!');
+          this.getUserInfo(uid);
+        } else {
+          // User already exists, update necessary fields
+          await updateDoc(userDocRef, {
+            spotifyId,
+            profile_picture: image || '',
+            name,
+          });
+          console.log('User info updated successfully!');
+          this.getUserInfo(uid);
+        }
+  
+      } else {
+        // If email does not exist, sign up with email and password
+        const userCredential = await createUserWithEmailAndPassword(auth, email, '123456');
+        uid = userCredential.user.uid;
+        console.log('User signed up and info saved successfully!');
+  
+        // Set user info in Firestore
+        const userDocRef = doc(getFirestore(), `users/${uid}`);
+        await setDoc(userDocRef, {
+          email,
+          name,
+          spotifyId,
+          profile_picture: image || '',
+          uid: uid || '',
+          saved_events: [],
+          invites: [],
+          matches: [],
+          age: '',
+          last_fm_id: '',
+          country: '',
+        });
+  
+        console.log('User info saved to Firestore successfully!');
+        this.getUserInfo(uid);
+      }
+    } catch (error) {
+      console.error('Error linking Spotify to Firebase:', error);
+    }
+  }  
+
+  async getUserInfo(uid: string) {
+    const loading = await this.utilService.loading(); 
+    await loading.present();
+
+    let path = `users/${uid}`;
+
+    this.getDocument(path).then((user: User) => {
+      this.utilService.saveInLocalStorage('user', user)
+      this.utilService.routerLink('/tabs'); 
+      
+      this.utilService.presentToast({
+        message: `Welcome Pal, ${user.name}!`,
+        duration: 1500,
+        position: 'middle',
+        icon: 'person-circle-outline'
+      })
+    }).catch(error => {
+      console.log(error);
+    }).finally(() => {
+      loading.dismiss();
+    })
   }
 
   // Eventos
@@ -205,136 +351,7 @@ export class FirebaseService {
     });
   }
 
-  // Autenticacion con Spotify
-  async signinWithSpotify(email: string) {
-    // TODO: Check si hay un spotify_id relacionado, sino, link accounts
-    // await this.updateUserSpotifyInfo(uid, email, spotifyId, name, image);
-
-    return signInWithEmailAndPassword(getAuth(), email, '123456'); // randomPassword); // Hardcoded just for troubleshooting
-  }
-
-  async checkIfEmailExists(email: string): Promise<boolean> {
-    const userRef = this.firestore.collection('users');
-    const querySnapshot = await userRef.ref.where('email', '==', email).get();
-  
-    // If any documents are returned, the email exists
-    return !querySnapshot.empty;
-  }
-
-  async authenticateWithSpotify(email: string): Promise<void> {
-    try {
-      console.log("Starting Spotify authentication for email: ", email);
-  
-      // Step 1: Retrieve Spotify user profile
-      // TODO: CHECK
-      // const user = await this.spotify.getProfile();
-      // if (!user) {
-      //   throw new Error('Failed to retrieve Spotify profile');
-      // }
-      // console.log("Spotify profile retrieved:", user);
-  
-      // Step 2: Extract user details from Spotify profile
-      // const spotifyId = (await user).spotifyID
-      // const name = (await user).displayName
-      // const image = (await user).profileImage
-      const spotifyId = "22oaxkt4bvq5mflg34r75qc6i";
-      const name = "Dianelys Saldaña"; 
-      const image = "https://i.scdn.co/image/ab67757000003b82a4beffa6b43be7021b699691"; 
-  
-      /*
-      "displayName":"Dianelys Saldaña",
-      "email":"dianelyssaldana5@gmail.com",
-      "spotifyID":"22oaxkt4bvq5mflg34r75qc6i",
-      "country":"ES",
-      "profileImage":"https://i.scdn.co/image/ab67757000003b82a4beffa6b43be7021b699691",
-      "followersCount":15
-      */
-  
-      // Step 3: Generate a random password for Firebase authentication
-      const randomPassword = Math.random().toString(36).slice(-8);
-      // console.log("Random password generated for Firebase:", randomPassword);
-  
-      // Step 4: Create Firebase user with email and generated random password
-      const authResult = await createUserWithEmailAndPassword(getAuth(), email, '123456'); // randomPassword); // Hardcoded just for troubleshooting
-      localStorage.setItem('isAuthenticated', 'true');
-
-      // Step 5: Get UID of newly created user
-      const uid = authResult.user.uid; 
-      if (!uid) {
-        throw new Error('Failed to retrieve user ID from Firebase');
-      }
-      console.log("Firebase user ID retrieved:", uid);
-
-      // Step 6: Update user information in Firebase with Spotify data
-      await this.setUserInfo(uid, email, name, spotifyId, image);
-      await this.updateUserSpotifyInfo(uid, email, spotifyId, name, image);
-      console.log("Firebase user information updated with Spotify data");
-  
-    } catch (error) {
-      console.error('Error authenticating with Spotify:', error.message, error);
-      throw error; 
-    }
-  }  
-
-  async updateUserSpotifyInfo(uid: string, email: string, spotifyId: string, name: string, image: string, age?: string): Promise<void> {
-    const path = `users/${uid}`;
-  
-    const updatedData = {
-      uid: uid || '',
-      spotify_id: spotifyId || '',
-      name: name || '',
-      email: email || '',
-      profile_picture: image || '',
-      saved_events: [] = [],
-      invites: [] = [],
-      matches: [] = [],
-      age: age || '',
-    };
-  
-    try {
-      await this.setDocument(path, updatedData);
-      console.log('User profile updated with Spotify info:', updatedData);
-    } catch (error) {
-      console.error('Error updating user profile:', error);
-      throw error;
-    }
-  }
-
-  async setUserInfo(uid: string, email: string, name: string, spotifyId: string, image: string, age?: string): Promise<void> {
-    const userInfo = {
-      uid: uid || '',
-      spotify_id: spotifyId || '',
-      name: name || '',
-      email: email || '',
-      profile_picture: image || '',
-      saved_events: [] = [],
-      invites: [] = [],
-      matches: [] = [],
-      age: age || '',
-    };
-  
-    const path = `users/${uid}`;
-  
-    try {
-      // Set the document in Firestore
-      await this.setDocument(path, userInfo);
-  
-      // Save to local storage and navigate
-      this.utilService.saveInLocalStorage('user', userInfo);
-      this.utilService.routerLink('/tabs/tab1');
-    } catch (error) {
-      console.error('Error setting user info:', error);
-  
-      // Show error toast
-      this.utilService.presentToast({
-        message: error.message,
-        duration: 2500,
-        position: 'middle',
-        icon: 'alert-circle-outline'
-      });
-    } 
-  }
-
+  // Get Firebase User Profile
   async getUserProfile(userId: string): Promise<User> {
     try {
       const userRef = this.firestore.collection('users').doc(userId);
@@ -350,7 +367,7 @@ export class FirebaseService {
     }
   }
 
-  // Function to retrieve user ID given an email
+  // Function to retrieve Firebase user ID given an email
   async getUserIdByEmail(email: string): Promise<string> {
     const db = getFirestore();
     const usersRef = collection(db, 'users');

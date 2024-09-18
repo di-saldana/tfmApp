@@ -34,13 +34,17 @@ export class Tab3Page {
   ) {}
 
   async ngOnInit() {
-    const user = this.utilsService.getFromLocalStorage('user'); 
+    const user = this.utilsService.getFromLocalStorage('user');
+    const firebaseProfile = this.firebaseService.getUserProfile(user.uid);
+
+    this.loadTopAlbums();
+
     if (user && user.uid) {
       this.userId = user.uid;
       this.userName = user.name;
-      this.userAge = user.age; // TODO: CHECK
+      this.userAge = user.age; 
       this.loadSavedEvents(user.uid);
-      this.loadTopAlbums();
+      this.loadTopAlbumsForUser((await firebaseProfile).last_fm_id);
       this.getUserFlag();
       await this.loadTopArtists(); 
       await this.loadTopTracks();
@@ -135,27 +139,79 @@ export class Tab3Page {
     );
   }
 
-  // Last.fm
   async loadTopAlbums() {
     const apiUrl = 'https://ws.audioscrobbler.com/2.0/';
-    const params = {
-      method: 'user.getTopAlbums',
-      user: 'dianelyssaldana',
-      limit: '4',
-      api_key: '6b949ae3e54e839ec00f53bf82c6a120',
-      format: 'json'
-    };
-
+    const apiKey = '6b949ae3e54e839ec00f53bf82c6a120';  // Last.fm API key
+  
     try {
+      // Retrieve the user object from local storage or Firebase
+      const user = this.utilsService.getFromLocalStorage('user');
+      
+      // Fetch last_fm_id from Firebase
+      const userProfile = await this.firebaseService.getUserProfile(user.uid);
+      const lastFmId = userProfile.last_fm_id;
+  
+      if (!lastFmId) {
+        console.error('No Last.fm ID found for user');
+        return;
+      }
+  
+      const params = {
+        method: 'user.getTopAlbums',
+        user: lastFmId,
+        limit: '4',
+        api_key: apiKey,
+        format: 'json'
+      };
+  
+      // Fetch the top albums from Last.fm API
       const response: any = await this.http.get(apiUrl, { params }).toPromise();
       this.favoriteAlbums = response.topalbums.album.map((album: any) => ({
         name: album.name,
         image: album.image.find((img: any) => img.size === 'large')?.['#text'] || 'https://ionicframework.com/docs/img/demos/card-media.png'
       }));
+      
     } catch (error) {
       console.error('Error fetching top albums: ', error);
     }
-  }
+  }  
+
+  async loadTopAlbumsForUser(userId: string): Promise<any[]> {
+    console.log("Last fm id: ", userId);
+    const apiUrl = 'https://ws.audioscrobbler.com/2.0/';
+    const apiKey = '6b949ae3e54e839ec00f53bf82c6a120';  // Last.fm API key
+    
+    try {
+      // Fetch user profile from Firebase
+      const userProfile = await this.firebaseService.getUserProfile(userId);
+      const lastFmId = userProfile.last_fm_id;
+
+      if (!lastFmId) {
+        console.error('No Last.fm ID found for user:', userId);
+        return [];
+      }
+
+      const params = {
+        method: 'user.getTopAlbums',
+        user: lastFmId,
+        limit: '4',
+        api_key: apiKey,
+        format: 'json'
+      };
+
+      // Fetch the top albums from Last.fm API
+      const response: any = await this.http.get(apiUrl, { params }).toPromise();
+      
+      return response.topalbums.album.map((album: any) => ({
+        name: album.name,
+        image: album.image.find((img: any) => img.size === 'large')?.['#text'] || 'https://ionicframework.com/docs/img/demos/card-media.png'
+      }));
+
+    } catch (error) {
+      console.error('Error fetching top albums for user:', userId, error);
+      return [];
+    }
+  }  
 
   // Load user's top artists from Spotify
   async loadTopArtists() {

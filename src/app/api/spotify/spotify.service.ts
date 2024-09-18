@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { SpotifyUser } from 'src/app/models/user.model';
 import { FirebaseService } from 'src/app/services/firebase.service';
+import { UtilsService } from 'src/app/services/utils.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +21,7 @@ export class SpotifyService {
   private readonly USER_PROFILE = 'https://api.spotify.com/v1/me';
   private readonly REFRESH_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
 
-  constructor(private http: HttpClient, private firebase: FirebaseService) {
+  constructor(private http: HttpClient, private firebase: FirebaseService, private utilService: UtilsService) {
     this.setupTokenRefresh();
   }
 
@@ -179,31 +181,26 @@ export class SpotifyService {
   }  
 
   async handleSpotifyLogin() {
-    console.log("Handle Spotify Login Flow")
-    /*
-    TODO: Flow for when a user authenticates with Spotify:
-
-      - Retrieve email from profile info with spotify.getProfile() method
-      - Check if email is registered already:
-        - If it is registered:
-          - Retrieve Spotify ID from profile
-          - updateUser() with the spotify id
-          - navigate home ('tabs/tab1')
-        - If user is not registered
-          - authenticateWithSpotify()
-          - navigate home ('tabs/tab1')
-    */
-    const email = (await this.getProfile()).email
-    const emailExists = await this.firebase.checkIfEmailExists(email);
-    console.log("Email exists: ", emailExists, email)
-
-    if(emailExists) {
-      // TODO: NOT WORKING
-      // this.firebase.signinWithSpotify(email);
-      localStorage.setItem('isAuthenticated', 'true');
+    console.log("Handle Spotify Login Flow");
+    await this.ensureTokenValid();
+    const userProfile = await this.getProfile();
+  
+    if (userProfile) {
+      console.log("User Profile:", userProfile);
+  
+      // Link Spotify account to Firebase
+      try {
+        await this.firebase.linkSpotifyToFirebase(
+          userProfile.email,
+          userProfile.spotifyID,
+          userProfile.displayName,
+          userProfile.profileImage
+        );
+      } catch (error) {
+        console.error('Error linking Spotify to Firebase:', error);
+      }
     } else {
-      // Create a new user account
-      this.firebase.authenticateWithSpotify(email)
+      console.error('Unable to retrieve Spotify user profile');
     }
   }
 
@@ -232,7 +229,7 @@ export class SpotifyService {
         email: data.email,
         spotifyID: data.id,
         country: data.country,
-        profileImage: data.images?.[0]?.url || null, // Handle optional image
+        profileImage: data.images?.[1]?.url || null, 
         followersCount: data.followers?.total || 0
       };
     
@@ -264,7 +261,7 @@ export class SpotifyService {
           Authorization: 'Bearer ' + accessToken
         }
       }).toPromise();
-      console.log('User Profile Response:', response); // Log the response
+      console.log('User Profile Response:', response); 
       return response;
     } catch (error) {
       console.error('Error fetching user profile:', error);
@@ -366,7 +363,6 @@ export class SpotifyService {
   }
 
   private fetchAccessToken(code: string): Promise<void> {
-    // const body = `grant_type=authorization_code&code=${code}&redirect_uri=${encodeURIComponent(this.redirect_uri)}`;
     const body = `grant_type=client_credentials&redirect_uri=${encodeURIComponent(this.redirect_uri)}`;
     
     return this.callAuthorizationApi(body);

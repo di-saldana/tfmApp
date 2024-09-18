@@ -244,10 +244,22 @@ export class LocationService {
       const user: User = await this.firebaseService.getUserProfile(userId);
 
       // Retrieve the country from the user's profile
-      const userCountry = user.country;
+      const userCountry = user.country; 
+      console.log("Country: ", userCountry);
+
+///
+      // Assuming the input format is always "[flag] [country]"
+      // Remove the flag and any leading space using split and join
+      const parts = userCountry.split(' ');
+      const countryName = parts.slice(1).join(' ');
+
+      // Or more specifically, if the country name is always the second part
+      // const countryName = parts[1] || '';
+      console.log("Country Formatted: ", countryName);
+///
 
       // Return the corresponding flag for the user's country
-      const countryFlag = this.countriesWithFlags[userCountry];
+      const countryFlag = this.countriesWithFlags[countryName];//userCountry]; 
 
       if (countryFlag) {
         return countryFlag;
