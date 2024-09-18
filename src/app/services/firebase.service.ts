@@ -105,7 +105,7 @@ export class FirebaseService {
     } 
   }
 
-  async linkSpotifyToFirebase(email: string, spotifyId: string, name: string, image: string) {
+  async linkSpotifyToFirebase(email: string, spotify_id: string, name: string, image: string) {
     try {
       const auth = getAuth();
       const emailExists = await this.checkIfEmailExists(email);
@@ -126,7 +126,7 @@ export class FirebaseService {
           await setDoc(userDocRef, {
             email,
             name,
-            spotifyId,
+            spotify_id,
             profile_picture: image || '',
             uid: uid || '',
             saved_events: [],
@@ -141,7 +141,7 @@ export class FirebaseService {
         } else {
           // User already exists, update necessary fields
           await updateDoc(userDocRef, {
-            spotifyId,
+            spotify_id,
             profile_picture: image || '',
             name,
           });
@@ -160,7 +160,7 @@ export class FirebaseService {
         await setDoc(userDocRef, {
           email,
           name,
-          spotifyId,
+          spotify_id,
           profile_picture: image || '',
           uid: uid || '',
           saved_events: [],
