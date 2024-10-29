@@ -34,7 +34,8 @@
   </ion-searchbar>
 
   <ion-card *ngFor="let event of evento">
-    <ion-img [src]="event.images[0].url"></ion-img>
+    <ion-img [src]="event.images[1].url"></ion-img>
+    <!-- [0] -->
 
     <ion-card-header>
       <ion-card-title class="event-title">

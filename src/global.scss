@@ -34,14 +34,16 @@
   
 :root {
     /* Primary color */
-    --ion-color-primary: #1B1464;
+    --ion-color-primary: #004aad;
     --ion-color-primary-rgb: 27, 20, 100;
+    --ion-color-primary-light: #DAE5F3;
+    --ion-color-primary-light-rgb: rgb(218, 229, 243);
   
     /* Shades of the primary color */
     --ion-color-primary-contrast: #ffffff;
     --ion-color-primary-contrast-rgb: 255, 255, 255;
-    --ion-color-primary-shade: #171158;
-    --ion-color-primary-tint: #30298a;
+    --ion-color-primary-shade: #004aad;
+    --ion-color-primary-tint: #1764c8;
   
     /* Other colors */
     --ion-color-secondary: #f7f8fa; /* Light background for contrast */
@@ -66,7 +68,7 @@
 body {
     font-family: var(--font-family);
     font-size: var(--font-size-base);
-    background-color: var(--ion-color-background);
+    background-color: var(ion-color-primary-light);
     color: var(--ion-text-color);
 }
 
@@ -83,7 +85,7 @@ ion-toolbar {
 }
 
 ion-content {
-    --background: var(--ion-color-light);
+    --background: var(--ion-color-primary-light); 
 }
 
 ion-button[fill="outline"] {
@@ -155,9 +157,13 @@ ion-item.custom-input {
     --inner-padding-start: 0;
 }
 
-app-logo {
-    margin-bottom: 20px;
-}
+// app-custom-input {
+//     --background: var(--ion-color-primary-light); //
+// }
+
+// app-logo {
+//     margin-bottom: 20px;
+// }
 
 ion-card {
     border-radius: 20px;
