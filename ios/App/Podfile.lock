@@ -12,6 +12,8 @@ PODS:
     - Capacitor
   - CapacitorSpotify (0.0.1):
     - Capacitor
+  - CapacitorWidgetsbridgePlugin (0.1.2):
+    - Capacitor
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
@@ -21,6 +23,7 @@ DEPENDENCIES:
   - "CapacitorGeolocation (from `../../node_modules/@capacitor/geolocation`)"
   - "CapacitorPushNotifications (from `../../node_modules/@capacitor/push-notifications`)"
   - CapacitorSpotify (from `../../node_modules/capacitor-spotify`)
+  - CapacitorWidgetsbridgePlugin (from `../../node_modules/capacitor-widgetsbridge-plugin`)
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -37,6 +40,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/push-notifications"
   CapacitorSpotify:
     :path: "../../node_modules/capacitor-spotify"
+  CapacitorWidgetsbridgePlugin:
+    :path: "../../node_modules/capacitor-widgetsbridge-plugin"
 
 SPEC CHECKSUMS:
   Capacitor: 679f9673fdf30597493a6362a5d5bf233d46abc2
@@ -46,7 +51,8 @@ SPEC CHECKSUMS:
   CapacitorGeolocation: 39dca51d755f08ed1d43e51be55291a402cdc64f
   CapacitorPushNotifications: ccd797926c030acad3d5498ef452c735c90a2c89
   CapacitorSpotify: 964c4e5350bbd2c4d61b775d5915e417e747d011
+  CapacitorWidgetsbridgePlugin: 384cf6a56ba2a3ee6d199579f5403723e766b958
 
-PODFILE CHECKSUM: 949abca664d6db54fa5d154513552c8cca57e26d
+PODFILE CHECKSUM: 0abdbcc70c578107e5ab91958b3a1af00328c21f
 
 COCOAPODS: 1.14.3

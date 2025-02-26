@@ -1,7 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TicketmasterService } from '../api/ticketmaster/ticketmaster.service'
-import { from } from 'rxjs';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { SpotifyService } from '../api/spotify/spotify.service';
 import { FirebaseService } from '../services/firebase.service';
@@ -31,21 +30,6 @@ export class Tab1Page implements OnInit {
   ngOnInit() {
     this.getUserLocationAndLoadEvents();
 
-    // Load initial events by postal code
-    // console.log(this.ticketmasterAPIService.getEventsByPostalCode('08038')) // Madrid '28009'
-
-    // const eventsPromise = this.ticketmasterAPIService.getEventsByPostalCode('08038');
-    // const eventsObservable = from(eventsPromise);
-
-    // eventsObservable.subscribe(
-    //   (result) => {
-    //     this.evento = result;
-    //   },
-    //   (err) => {
-    //     console.log(err);
-    //   }
-    // );
-
     // uid
     const user = this.utilsService.getFromLocalStorage('user'); 
     if (user && user.uid) {
@@ -64,8 +48,8 @@ export class Tab1Page implements OnInit {
       // Get the current position using Capacitor Geolocation
       const position = await Geolocation.getCurrentPosition();
 
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
+      const lat = position.coords.latitude; // 40.54579798486183
+      const lng = position.coords.longitude; // -3.7004399308207847
 
       console.log('Current position:', lat, lng);
 
@@ -74,6 +58,44 @@ export class Tab1Page implements OnInit {
       await loading.dismiss();
     } catch (error) {
       console.error('Error getting user location:', error);
+    }
+  }
+
+  async loadEventsByLatLong(lat: number, lng: number) {
+    try {
+      console.log(`Fetching events near: lat=${lat}, lng=${lng}`);
+  
+      // Check if the coordinates are within Puerto Rico's range
+      const isPuertoRico = lat >= 17.9 && lat <= 18.5 && lng >= -67.3 && lng <= -65.2;
+  
+      if (isPuertoRico) {
+        console.log('User is in Puerto Rico. Fetching events from Firebase.');
+        this.evento = await this.getEventsFromFirebase();
+      } else {
+        console.log('User is NOT in Puerto Rico. Fetching events from Ticketmaster.');
+        this.evento = await this.ticketmasterAPIService.getEventsByLocation(lat, lng);
+      }
+  
+      this.filteredEvents = this.events;
+  
+      // If no events are found, show a "No events available" message
+      if (!this.filteredEvents || this.filteredEvents.length === 0) {
+        console.log('No events available in this area.');
+        // this.filteredEvents = [{ name: 'No events available in your area', img: 'default-placeholder.png' }];
+      }
+  
+    } catch (error) {
+      console.error('Error loading events:', error);
+    }
+  }  
+
+  async getEventsFromFirebase() {
+    try {
+      const snapshot = await this.firestore.collection('eventsPuertoRico').get().toPromise();
+      return snapshot?.docs.map(doc => doc.data()) || [];
+    } catch (error) {
+      console.error('Error fetching events from Firebase:', error);
+      return [];
     }
   }
 
@@ -90,22 +112,7 @@ export class Tab1Page implements OnInit {
       console.error('Error loading events by geoPoint:', error);
     }
   }
-
-  // Load events from Ticketmaster API based on user's lat and long
-  async loadEventsByLatLong(lat: number, lng: number) {
-    try {
-      console.log(`Fetching events near: lat=${lat}, lng=${lng}`);
-      
-      // Call Ticketmaster API to get events by geoPoint and radius
-      this.evento = await this.ticketmasterAPIService.getEventsByLocation(lat, lng);
-      this.filteredEvents = this.evento;
-      console.log('Events:', this.filteredEvents);
-    } catch (error) {
-      console.error('Error loading events by lat long:', error);
-    }
-  }
   
-  // TODO: Display "No events available" if none found
   async loadEventsByPostalCode(postalCode: string) {
     try {
       this.evento = await this.ticketmasterAPIService.getEventsByPostalCode(postalCode);
@@ -132,6 +139,39 @@ export class Tab1Page implements OnInit {
     } catch (error) {
       console.error('Error filtering events:', error);
       this.filteredEvents = [];
+    }
+  }
+
+  searchZipCode: string = ''; // Stores the zip code input
+  selectedDate: string = '';  // Stores the selected date
+
+  async fetchEvents() {
+    try {
+      const loading = await this.utilsService.loading(); 
+      await loading.present();
+
+      if (this.searchZipCode) {
+        // Fetch events by postal code if provided
+        this.evento = await this.ticketmasterAPIService.getEventsByPostalCode(this.searchZipCode);
+      } else {
+        // Default to fetching by location if no zip is provided
+        const position = await Geolocation.getCurrentPosition();
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        this.events = await this.ticketmasterAPIService.getEventsByLocation(lat, lng);
+      }
+
+      // If a date is selected, filter events by date
+      if (this.selectedDate) {
+        this.events = this.evento.filter(event => 
+          new Date(event.date).toDateString() === new Date(this.selectedDate).toDateString()
+        );
+      }
+
+      this.filteredEvents = this.evento;
+      await loading.dismiss();
+    } catch (error) {
+      console.error('Error fetching events:', error);
     }
   }
 

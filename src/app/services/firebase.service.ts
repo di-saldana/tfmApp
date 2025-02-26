@@ -6,7 +6,7 @@ import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, up
 import { User } from '../models/user.model';
 import { UtilsService } from './utils.service';
 import { catchError, from, map, Observable, throwError } from 'rxjs';
-import { SpotifyService } from '../api/spotify/spotify.service'; 
+// import { SpotifyService } from '../api/spotify/spotify.service'; 
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,7 @@ import { SpotifyService } from '../api/spotify/spotify.service';
 export class FirebaseService {
   auth = inject(AngularFireAuth);
   firestore = inject(AngularFirestore);
-  spotify = inject(SpotifyService);
+  // spotify = inject(SpotifyService);
   utilService = inject(UtilsService);
 
   getAuth() {
@@ -395,27 +395,34 @@ export class FirebaseService {
   async getAllUsers(ownerUid: string): Promise<any[]> {
     const db = getFirestore();
     const usersRef = collection(db, 'users');
-    const querySnapshot = await getDocs(usersRef);
-
+  
+    // Query to exclude the ownerUid
+    const q = query(usersRef, where('uid', '!=', ownerUid));
+    const querySnapshot = await getDocs(q);
+  
     const allUsers: any[] = [];
     querySnapshot.forEach((doc) => {
-      const userData = doc.data();
-      if (userData['uid'] !== ownerUid) {
-        allUsers.push(userData);
-      }
+      allUsers.push(doc.data());
     });
-
+  
     return allUsers;
   }
 
   getUsers(): Observable<any[]> {
-    return this.firestore.collection('users').valueChanges().pipe(
-      map(users => {
-        if (users) {
-          return users; // Returns all users
-        } else {
-          return []; // Returns an empty array if no users found
-        }
+    return this.firestore.collection('users').snapshotChanges().pipe(
+      map(snaps => {
+        return snaps.map(snap => {
+          const data = snap.payload.doc.data();
+          const id = snap.payload.doc.id;
+  
+          // Ensure data is an object before spreading
+          if (typeof data === 'object' && data !== null) {
+            return { id, ...data };
+          } else {
+            console.warn('Invalid user data:', data);
+            return { id }; // Return only the ID if data is not an object
+          }
+        });
       }),
       catchError(error => {
         console.error('Error fetching users:', error);

@@ -33,32 +33,79 @@
     (keyup.enter)="filterEvents(searchTerm)">
   </ion-searchbar>
 
-  <ion-card *ngFor="let event of evento">
-    <ion-img [src]="event.images[1].url"></ion-img>
-    <!-- [0] -->
+  <ion-grid>
+    <ion-row>
+      <!-- Location -->
+      <ion-col>
+        <ion-item>
+          <ion-input [(ngModel)]="searchZipCode" placeholder="City or Zip Code" (keydown.enter)="fetchEvents()"></ion-input>
+        </ion-item>
+      </ion-col>
 
-    <ion-card-header>
-      <ion-card-title class="event-title">
-        {{ event.name }}
-        <!-- Ahora mismo estoy guardando solo el nombre del evento (event.name) -->
-      </ion-card-title>
-      <ion-icon name="add" (click)="addEvent(event.name)"  
-                style="position: absolute; top: 15px; right: 20px; font-size: 30px; color: var(--ion-color-primary);">
-      </ion-icon>
-    </ion-card-header>
+      <!-- Date -->
+      <ion-col> 
+        <ion-accordion-group>
+        <ion-accordion value="first" toggleIcon="caret-down-circle" toggleIconSlot="start">
+          <ion-item slot="header" color="light">
+            <ion-label>Pick a Date</ion-label>
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <ion-datetime presentation="date" ></ion-datetime>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
-    <ion-card-content>
-      <div class="icon-text-row">
-        <ion-icon name="calendar" style="font-size: 25px;"></ion-icon>
-        <span>{{ event.dates.start.localDate | date:'MMM d, yyyy' }}</span>
-      </div>
-      <div class="icon-text-row">
-        <ion-icon name="location" style="font-size: 25px;"></ion-icon>
-        <span>{{ event._embedded.venues[0].name }}, {{ event._embedded.venues[0].city.name }}</span>
-      </div>
-    </ion-card-content>
-    
-  </ion-card>
+  <ng-container *ngIf="evento && evento.length > 0; else noEvents">
+    <ion-card *ngFor="let event of evento">
+      
+      <!-- Image Handling: Check if the event is from Ticketmaster or Firebase -->
+      <ion-img *ngIf="event.images; else firebaseImage" [src]="event.images[1]?.url"></ion-img>
+      <ng-template #firebaseImage>
+        <ion-img [src]="event.img || 'assets/default-placeholder.png'"></ion-img>
+      </ng-template>
+  
+      <ion-card-header>
+        <ion-card-title class="event-title">
+          {{ event.name }}
+        </ion-card-title>
+        <ion-icon name="add" (click)="addEvent(event.name)"  
+                  style="position: absolute; top: 15px; right: 20px; font-size: 30px; color: var(--ion-color-primary);">
+        </ion-icon>
+      </ion-card-header>
+  
+      <ion-card-content>
+        <!-- Date Handling -->
+        <div class="icon-text-row">
+          <ion-icon name="calendar" style="font-size: 25px;"></ion-icon>
+          <span>
+            {{ event.date }}
+          </span>
+        </div>
+  
+        <!-- Venue Handling -->
+        <div class="icon-text-row">
+          <ion-icon name="location" style="font-size: 25px;"></ion-icon>
+          <span>
+            {{ event.venue || event._embedded?.venues[0]?.name }}
+          </span>
+        </div>
+      </ion-card-content>
+      
+    </ion-card>
+  </ng-container>
+  
+  <ng-template #noEvents>
+      <ion-card class="no-events-message">
+        <img alt="Silhouette of mountains" src="/assets/shapes-01.png" />
+        <ion-card-header>
+          <ion-card-title>No events</ion-card-title>
+          <ion-card-subtitle>There are no events available in your area yet.</ion-card-subtitle>
+        </ion-card-header>
+      </ion-card>
+  </ng-template>  
 
   <ion-footer>
     <ion-toolbar style="visibility: hidden;"/>
