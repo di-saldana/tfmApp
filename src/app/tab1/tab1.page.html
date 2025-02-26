@@ -27,10 +27,17 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-searchbar 
-    placeholder="Search Event by Artist" 
+  <!-- <ion-searchbar 
+    placeholder="Search Event" 
     [(ngModel)]="searchTerm"
     (keyup.enter)="filterEvents(searchTerm)">
+  </ion-searchbar> -->
+
+  <ion-searchbar 
+    [(ngModel)]="searchTerm"
+    placeholder="Search Event"
+    (ionInput)="onSearchInput($event)" 
+    (keyup.enter)="fetchEvents()">
   </ion-searchbar>
 
   <ion-grid>
@@ -58,7 +65,8 @@
     </ion-row>
   </ion-grid>
 
-  <ng-container *ngIf="evento && evento.length > 0; else noEvents">
+  <!-- ; else noEvents -->
+  <ng-container *ngIf="evento && evento.length > 0">
     <ion-card *ngFor="let event of evento">
       
       <!-- Image Handling: Check if the event is from Ticketmaster or Firebase -->
@@ -97,7 +105,7 @@
     </ion-card>
   </ng-container>
   
-  <ng-template #noEvents>
+  <!-- <ng-template #noEvents>
       <ion-card class="no-events-message">
         <img alt="Silhouette of mountains" src="/assets/shapes-01.png" />
         <ion-card-header>
@@ -105,7 +113,7 @@
           <ion-card-subtitle>There are no events available in your area yet.</ion-card-subtitle>
         </ion-card-header>
       </ion-card>
-  </ng-template>  
+  </ng-template>   -->
 
   <ion-footer>
     <ion-toolbar style="visibility: hidden;"/>

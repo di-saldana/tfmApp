@@ -2,7 +2,6 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TicketmasterService } from '../api/ticketmaster/ticketmaster.service'
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { SpotifyService } from '../api/spotify/spotify.service';
 import { FirebaseService } from '../services/firebase.service';
 import { UtilsService } from '../services/utils.service';
 import { Geolocation } from '@capacitor/geolocation'; 
@@ -20,8 +19,7 @@ export class Tab1Page implements OnInit {
   searchTerm: string = ''; 
 
   constructor(private ticketmasterAPIService: TicketmasterService, 
-              private firestore: AngularFirestore, 
-              private spotifyService: SpotifyService, 
+              private firestore: AngularFirestore,  
               private route: ActivatedRoute) {}
 
   firebaseService = inject(FirebaseService);
@@ -89,6 +87,7 @@ export class Tab1Page implements OnInit {
     }
   }  
 
+  // TODO: RENAME TO PR
   async getEventsFromFirebase() {
     try {
       const snapshot = await this.firestore.collection('eventsPuertoRico').get().toPromise();
@@ -99,49 +98,6 @@ export class Tab1Page implements OnInit {
     }
   }
 
-  // Load events from Ticketmaster API based on user's geoPoint and radius
-  async loadEventsByGeoPoint(lat: number, lng: number, radius: number) {
-    try {
-      console.log(`Fetching events near: lat=${lat}, lng=${lng}, radius=${radius}`);
-      
-      // Call Ticketmaster API to get events by geoPoint and radius
-      this.evento = await this.ticketmasterAPIService.getEventsByGeoPoint(lat, lng, radius);
-      this.filteredEvents = this.evento;
-      console.log('Events:', this.filteredEvents);
-    } catch (error) {
-      console.error('Error loading events by geoPoint:', error);
-    }
-  }
-  
-  async loadEventsByPostalCode(postalCode: string) {
-    try {
-      this.evento = await this.ticketmasterAPIService.getEventsByPostalCode(postalCode);
-      this.filteredEvents = this.evento;
-    } catch (error) {
-      console.error('Error loading events:', error);
-    }
-  }
-
-  // Filter events by artist or event name
-  async filterEvents(searchTerm: string) {
-    console.log('Search term:', searchTerm);
-
-    if (!searchTerm || searchTerm.trim() === '') {
-      this.filteredEvents = [...this.evento]; // Reset to original event list 
-      return;
-    }
-
-    try {
-      this.filteredEvents = await this.ticketmasterAPIService.getEventsByArtist(searchTerm);
-      if (this.filteredEvents.length === 0) {
-        console.log('No matching events found');
-      }
-    } catch (error) {
-      console.error('Error filtering events:', error);
-      this.filteredEvents = [];
-    }
-  }
-
   searchZipCode: string = ''; // Stores the zip code input
   selectedDate: string = '';  // Stores the selected date
 
@@ -149,32 +105,35 @@ export class Tab1Page implements OnInit {
     try {
       const loading = await this.utilsService.loading(); 
       await loading.present();
-
-      if (this.searchZipCode) {
-        // Fetch events by postal code if provided
+  
+      if (this.searchTerm.trim() !== '') {
+        // Fetch events by keyword
+        this.evento = await this.ticketmasterAPIService.getEventsByKeyword(this.searchTerm);
+      } else if (this.searchZipCode) {
+        // Fetch events by postal code
         this.evento = await this.ticketmasterAPIService.getEventsByPostalCode(this.searchZipCode);
       } else {
-        // Default to fetching by location if no zip is provided
+        // Default: Fetch events by location
         const position = await Geolocation.getCurrentPosition();
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
-        this.events = await this.ticketmasterAPIService.getEventsByLocation(lat, lng);
+        this.evento = await this.ticketmasterAPIService.getEventsByLocation(lat, lng);
       }
-
-      // If a date is selected, filter events by date
-      if (this.selectedDate) {
-        this.events = this.evento.filter(event => 
-          new Date(event.date).toDateString() === new Date(this.selectedDate).toDateString()
-        );
-      }
-
+  
       this.filteredEvents = this.evento;
       await loading.dismiss();
     } catch (error) {
       console.error('Error fetching events:', error);
     }
   }
-
+  
+  // Optional: Auto-trigger search when typing
+  onSearchInput(event: any) {
+    if (event.detail.value.trim() === '') {
+      this.fetchEvents(); // Reset search if input is empty
+    }
+  }
+  
   // Function to add an event when the user clicks the "Add" button
   async addEvent(eventId: string) {
     const loading = await this.utilsService.loading();
