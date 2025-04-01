@@ -1,0 +1,31 @@
+
+/* Styling for the Swiper container */
+swiper-container {
+    height: 100vh;
+  }
+  
+  /* Styling for each slide */
+  swiper-slide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  /* Styling for the images inside Swiper slides */
+  swiper-slide img {
+    height: 40vh;
+    margin-bottom: 40px;
+  }
+  
+  /* Optional: Add padding or margin for content inside Swiper */
+  ion-content {
+    --padding-top: 10px;
+    --padding-bottom: 10px;
+  }
+  
+  /* Add any other custom styles */
+  // body {
+  //   background-color: #f0f0f0; /* Optional: Change background color */
+  // }

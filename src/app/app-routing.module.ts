@@ -22,6 +22,10 @@ const routes: Routes = [
     loadChildren: () => import('./chat/chat.module').then( m => m.ChatPageModule), canActivate: [AuthGuard]
   },
   {
+    path: 'slides-intro',
+    loadChildren: () => import('./slides-intro/slides-intro.module').then( m => m.SlidesIntroPageModule)
+  },
+  {
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then( m => m.AuthPageModule), canActivate: [NoAuthGuard]
   }
