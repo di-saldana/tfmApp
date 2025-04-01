@@ -3,9 +3,9 @@
     <ion-toolbar>
       <ion-title>Sign Up</ion-title>
   
-      <ion-buttons slot="start">
+      <!-- <ion-buttons slot="start">
         <ion-back-button defaultHref="/auth"></ion-back-button>
-      </ion-buttons>
+      </ion-buttons> -->
     </ion-toolbar>
 </ion-header>
 
@@ -83,6 +83,11 @@
               Sign Up
               <ion-icon slot="end" name="person-add-outline"></ion-icon>
           </ion-button>
+          
+          <p class="ion-margin-top centered-text">
+            Already a member? 
+            <a routerLink="/auth" class="sign-up-link">Sign In</a>
+          </p>
         </form>    
     </div>
 </ion-content>

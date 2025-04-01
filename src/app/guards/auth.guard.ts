@@ -21,9 +21,10 @@ export class AuthGuard implements CanActivate {
     return new Promise((resolve) => {
       this.firebaseService.getAuth().onAuthStateChanged((auth) => {
         if(auth) {
-          if(user) resolve(true);
+          if(user) resolve(true); // User is authenticated, allow access
         } else {
           this.firebaseService.signout();
+          this.utilsService.routerLink('/slides-intro'); // Redirect to slides-intro
           resolve(false);
         }
       })

@@ -6,29 +6,37 @@ import { AuthGuard } from './guards/auth.guard';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'auth', // Default page
+    redirectTo: 'slides-intro', // Default page
     pathMatch: 'full'
   },
   {
+    path: 'slides-intro',
+    loadChildren: () => import('./slides-intro/slides-intro.module').then( m => m.SlidesIntroPageModule),
+    canActivate: [NoAuthGuard]
+  },
+  {
     path: 'tabs',
-    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule), canActivate: [AuthGuard]
+    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule), 
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'chat',
+    loadChildren: () => import('./chat/chat.module').then( m => m.ChatPageModule), 
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'auth',
+    loadChildren: () => import('./auth/auth.module').then( m => m.AuthPageModule), 
+    canActivate: [NoAuthGuard]
+  },
+  {
+    path: '**',
+    redirectTo: 'slides-intro'
   },
   // {
   //   path: 'chats/:id',
   //   loadChildren: () => import('./chat/chat-rooms/chat-rooms-routing.module').then( m => m.ChatRoomsPageRoutingModule), canActivate: [AuthGuard]
   // },
-  {
-    path: 'chat',
-    loadChildren: () => import('./chat/chat.module').then( m => m.ChatPageModule), canActivate: [AuthGuard]
-  },
-  {
-    path: 'slides-intro',
-    loadChildren: () => import('./slides-intro/slides-intro.module').then( m => m.SlidesIntroPageModule)
-  },
-  {
-    path: 'auth',
-    loadChildren: () => import('./auth/auth.module').then( m => m.AuthPageModule), canActivate: [NoAuthGuard]
-  }
 ];
 @NgModule({
   imports: [

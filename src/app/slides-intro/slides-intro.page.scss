@@ -11,21 +11,31 @@ swiper-container {
     align-items: center;
     justify-content: center;
     text-align: center;
+    padding: 5vh;
+    color: black;
   }
   
   /* Styling for the images inside Swiper slides */
   swiper-slide img {
     height: 40vh;
     margin-bottom: 40px;
+    max-width: 100%;
+    object-fit: contain;    
   }
   
-  /* Optional: Add padding or margin for content inside Swiper */
-  ion-content {
-    --padding-top: 10px;
-    --padding-bottom: 10px;
+  .slide-img {
+    width: 200px; // Fixed width
+    height: 200px; // Fixed height
+    object-fit: contain; // Ensures it keeps its aspect ratio
   }
+
+  /* Optional: Add padding or margin for content inside Swiper */
+//   ion-content {
+//     --padding-top: 10px;
+//     --padding-bottom: 10px;
+//   }
   
   /* Add any other custom styles */
-  // body {
-  //   background-color: #f0f0f0; /* Optional: Change background color */
-  // }
+//   body {
+//     background-color: #f0f0f0; /* Optional: Change background color */
+//   }
