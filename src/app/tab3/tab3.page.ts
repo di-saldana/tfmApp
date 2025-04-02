@@ -59,7 +59,7 @@ export class Tab3Page {
         await this.loadUserProfile();
       } else {
         // Otherwise, load the profile picture from Firebase
-        await this.loadProfilePic(user.uid);
+        // await this.loadProfilePic(user.uid);
       }
     } else {
       console.error('User ID is not available');

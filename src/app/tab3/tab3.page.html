@@ -35,7 +35,7 @@
       </ion-card-header>
   </ion-card>
 
-  <ion-card>
+  <ion-card *ngIf="events?.length > 0">
     <ion-card-content>
       <ion-label>
         <h2>Events</h2>
@@ -49,7 +49,7 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-card>
+  <ion-card *ngIf="favoriteArtists?.length > 0">
     <ion-card-content>
       <ion-label>
         <h2>Top Artists</h2>
@@ -82,7 +82,7 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-card>
+  <ion-card *ngIf="favoriteAlbums?.length > 0">
     <ion-card-content>
       <ion-label>
         <h2>Top Albums</h2>
@@ -98,7 +98,7 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-card>
+  <ion-card *ngIf="favoriteSongs?.length > 0">
     <ion-card-content>
       <ion-label>
         <h2>Top Tracks</h2>

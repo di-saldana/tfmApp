@@ -35,22 +35,22 @@
 
   <ion-searchbar 
     [(ngModel)]="searchTerm"
-    placeholder="Search Event"
+    placeholder="Search by Artist"
     (ionInput)="onSearchInput($event)" 
     (keyup.enter)="fetchEvents()">
   </ion-searchbar>
 
-  <ion-grid>
-    <ion-row>
+  <!-- <ion-grid>
+    <ion-row> -->
       <!-- Location -->
-      <ion-col>
+      <!-- <ion-col>
         <ion-item>
           <ion-input [(ngModel)]="searchZipCode" placeholder="City or Zip Code" (keydown.enter)="fetchEvents()"></ion-input>
         </ion-item>
-      </ion-col>
+      </ion-col> -->
 
       <!-- Date -->
-      <ion-col> 
+      <!-- <ion-col> 
         <ion-accordion-group>
         <ion-accordion value="first" toggleIcon="caret-down-circle" toggleIconSlot="start">
           <ion-item slot="header" color="light">
@@ -63,7 +63,7 @@
       </ion-accordion-group>
       </ion-col>
     </ion-row>
-  </ion-grid>
+  </ion-grid> -->
 
   <!-- ; else noEvents -->
   <ng-container *ngIf="evento && evento.length > 0">
@@ -89,7 +89,7 @@
         <div class="icon-text-row">
           <ion-icon name="calendar" style="font-size: 25px;"></ion-icon>
           <span>
-            {{ event.date }}
+            {{ event.date || (event.dates.start.localDate | date:'MMM d, yyyy') }}
           </span>
         </div>
   
@@ -98,6 +98,14 @@
           <ion-icon name="location" style="font-size: 25px;"></ion-icon>
           <span>
             {{ event.venue || event._embedded?.venues[0]?.name }}
+          </span>
+        </div>
+
+        <!-- Country Handling -->
+        <div class="icon-text-row">
+          <ion-icon name="earth-outline" style="font-size: 25px;"></ion-icon>
+          <span>
+            {{ event.city || event._embedded.venues[0].city.name }}
           </span>
         </div>
       </ion-card-content>
