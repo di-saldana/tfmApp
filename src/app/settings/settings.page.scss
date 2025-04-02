@@ -1,0 +1,10 @@
+ion-button {
+    width: 60%;  // Makes the button wider but not full width
+    max-width: 300px; // Prevents excessive stretching
+    font-size: 1rem;
+
+    justify-content: center;  // Center vertically
+    align-items: center;      // Center horizontally
+    text-align: center; 
+    margin-left: 75px;  
+}

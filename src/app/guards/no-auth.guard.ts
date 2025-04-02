@@ -18,10 +18,20 @@ canActivate(
 
     return new Promise((resolve) => {
       this.firebaseService.getAuth().onAuthStateChanged((auth) => {
-        if(!auth) resolve(true);
+        if(!auth) resolve(true); // Allow access if no authentication
         else {
-          this.utilsService.routerLink('/tabs/tab1');
-          resolve(false);
+          // this.utilsService.routerLink('/spotify-button'); // /tabs/tab1
+          // resolve(false);
+
+          const spotifyToken = localStorage.getItem('spotify_token');
+          console.log("Spotify Token: " + spotifyToken);
+          if (!spotifyToken) {
+            this.utilsService.routerLink('/spotify-button'); // Redirect to Spotify authentication
+          } else {
+            this.utilsService.routerLink('/tabs/tab1'); // Redirect to main app
+          }
+          resolve(false); // Prevent access to the requested route
+    
         }
       })
     });

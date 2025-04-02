@@ -15,6 +15,11 @@ const routes: Routes = [
     canActivate: [NoAuthGuard]
   },
   {
+    path: 'auth',
+    loadChildren: () => import('./auth/auth.module').then( m => m.AuthPageModule), 
+    canActivate: [NoAuthGuard]
+  },
+  {
     path: 'tabs',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule), 
     canActivate: [AuthGuard]
@@ -25,9 +30,9 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'auth',
-    loadChildren: () => import('./auth/auth.module').then( m => m.AuthPageModule), 
-    canActivate: [NoAuthGuard]
+    path: 'spotify-button',
+    loadChildren: () => import('./spotify-button/spotify-button.module').then( m => m.SpotifyButtonPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: '**',
@@ -35,7 +40,8 @@ const routes: Routes = [
   },
   // {
   //   path: 'chats/:id',
-  //   loadChildren: () => import('./chat/chat-rooms/chat-rooms-routing.module').then( m => m.ChatRoomsPageRoutingModule), canActivate: [AuthGuard]
+  //   loadChildren: () => import('./chat/chat-rooms/chat-rooms-routing.module').then( m => m.ChatRoomsPageRoutingModule), 
+  //   canActivate: [AuthGuard]
   // },
 ];
 @NgModule({

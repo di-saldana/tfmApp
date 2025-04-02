@@ -1,0 +1,31 @@
+.center-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;  // Center vertically
+    align-items: center;      // Center horizontally
+    height: 100vh;            // Full height of the screen
+    text-align: center;
+    padding: 20px;            
+}
+
+.spotify-logo {
+    width: 200px; // Fixed width
+    height: 200px; // Fixed height
+    object-fit: contain; // Ensures it keeps its aspect ratio
+}
+
+h3 {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 20px; 
+}
+
+p {
+    margin-bottom: 5px;
+}
+
+ion-button {
+    width: 70%;  // Makes the button wider but not full width
+    max-width: 300px; // Prevents excessive stretching
+    font-size: 1rem;
+}
