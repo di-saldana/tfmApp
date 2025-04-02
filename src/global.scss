@@ -35,9 +35,9 @@
 :root {
     /* Primary color */
     --ion-color-primary: #004aad;
-    --ion-color-primary-rgb: rgb(27, 20, 100);
-    --ion-color-primary-light: #2e2e2e; /* #DAE5F3; */
-    --ion-color-primary-light-rgb: rgb(218, 229, 243);
+    --ion-color-primary-rgb: rgb(0, 74, 173);
+    // --ion-color-primary-light: #DAE5F3; /*  #2e2e2e; */
+    // --ion-color-primary-light-rgb: rgb(218, 229, 243);
   
     /* Shades of the primary color */
     --ion-color-primary-contrast: #ffffff;
@@ -116,12 +116,12 @@ ion-input {
 }
 
 .auth-form {
-    background: var(--ion-color-light);
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 400px;
+    // box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    // background: var(--ion-color-light);
 }
 
 .validators {

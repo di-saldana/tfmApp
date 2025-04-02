@@ -104,7 +104,7 @@ export class SignUpPage implements OnInit {
 
       this.firebaseService.setDocument(path, userInfo).then(async res => {
         this.utilsService.saveInLocalStorage('user', userInfo)
-        this.utilsService.routerLink('/tabs/tab1');  // auth
+        this.utilsService.routerLink('spotify-button'); // /tabs/tab1 // auth
         this.form.reset();
       }).catch(error => {
         console.log(error);

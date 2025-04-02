@@ -23,9 +23,9 @@ canActivate(
           // this.utilsService.routerLink('/spotify-button'); // /tabs/tab1
           // resolve(false);
 
-          const spotifyToken = localStorage.getItem('spotify_token');
-          console.log("Spotify Token: " + spotifyToken);
-          if (!spotifyToken) {
+          const refreshToken = localStorage.getItem('refresh_token'); 
+          console.log("Refresh Token: " + refreshToken);
+          if (!refreshToken) {
             this.utilsService.routerLink('/spotify-button'); // Redirect to Spotify authentication
           } else {
             this.utilsService.routerLink('/tabs/tab1'); // Redirect to main app
